@@ -1,0 +1,163 @@
+.pointer {cursor: pointer;}
+
+a, #user-menu
+{
+  opacity:0.8;
+  transition: opacity .3s;
+}
+
+a:active,a:hover,#user-menu:active, #user-menu:hover{
+  opacity:1;
+  transition: opacity .3s;
+}
+
+
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+main .form-control
+{
+    display: inline-block;
+    width: auto;
+}
+
+main
+{
+    overflow-x: auto;
+    text-align: center;
+}
+
+.alert
+{
+  text-align:center;
+}
+
+.card
+{
+  min-width: 12em;
+  max-width: 12em;
+}
+
+.card-columns
+{
+  column-count:5;
+}
+
+.display-2,.display-4,.lead
+{
+  padding: 6px;
+}
+
+.jumbotron
+{
+  background-color: #27ae60 !important;
+  color: #ecf0f1;
+  text-shadow: 2px 2px 5px black;
+}
+
+.lead
+{
+  font-size: 35px !important;
+}
+
+.nav-link
+{
+  font-weight:bold;
+}
+
+.navbar-brand
+{
+  color:#27ae60 !important;
+
+}
+
+.table-hover  tr
+{
+  transition: background-color 0.5s;
+}
+
+#cash-text
+{
+  color:#27ae60;
+  font-weight:bold;
+}
+
+.cash-text
+{
+  color:#27ae60;
+  font-weight:bold;
+}
+
+#user-menu{
+  text-transform:capitalize;
+  font-size:20px;
+  background-color: #27ae60;
+}
+
+/* STOCK DETAILS PAGE  */
+
+.wrapper
+{
+  display: grid;
+}
+
+.left
+{
+  grid-column: 1;
+  text-align: left;
+  min-width:43em;
+  max-width:43em;
+  padding:30px;
+}
+
+.right
+{
+  grid-column: 2;
+  text-align: left;
+  min-width:43em;
+  max-width:43em;
+  padding:30px;
+}
+
+.heading
+{
+  font-weight:bold !important;
+  text-transform: uppercase;
+}
+
+
+/* SCROLL BAR css */
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ecf0f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #95a5a6;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #bdc3c7;
+}
+
+@media screen and (max-width:800px)
+{
+  .left{
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .right{
+    grid-column: 1;
+    grid-row: 2;
+  }
+}

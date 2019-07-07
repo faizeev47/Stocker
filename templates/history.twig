@@ -1,0 +1,46 @@
+{% extends 'layout.twig' %}
+{% block body %}
+  <main class="container p-5">
+    <label class="display-4">History</label>
+    <hr>
+    <table class="table" id="table">
+        <thead>
+            <tr>
+                <th scope="col">Transaction ID</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Shares transacted</th>
+                <th scope="col">Transaction price</th>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Transaction type</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for record in  history %}
+            <tr>
+              <td>{{ record.trans_id }}</td>
+              <td>{{ record.symbol }}</td>
+              <td>{{ record.shares }}</td>
+              <td>${{ record.price }}</td>
+              <td>{{ record.date }}</td>
+              <td>{{ record.time }}</td>
+              <td>{{ record.type }}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="7"><div class="lead">Buy or sell some stocks to display your transaction history here!</div></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </main>
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#table').DataTable();
+  } );
+</script>
+{% endblock %}

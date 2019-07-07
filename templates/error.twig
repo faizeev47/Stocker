@@ -1,0 +1,26 @@
+{% extends 'layout.twig' %}
+{% block body %}
+  <div class="jumbotron"
+  style="background-color: #27ae60 !important;
+    color: #2c3e50;
+    text-shadow:none;";
+  >
+    <div class="display-1" style="font-weight:bold;">
+      {% if code is defined %}
+      {{ code }}
+      {% else %}
+      404
+      {% endif %}
+    </div>
+    <div class="display-3">
+      {% if error is defined %}
+      {{ error }}
+      {% else %}
+      Not found!
+      {% endif %}
+    </div>
+    <div class="display-4">
+      <a href="/home" style="color: #2c3e50;">Back to home </a>
+    </div>
+  </div>
+{% endblock %}

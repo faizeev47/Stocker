@@ -1,0 +1,44 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+<div class="jumbotron">
+  <div class="display-1">
+    Finance
+  </div>
+  <div class="display-4">
+    Play with stocks
+  </div>
+  <div class="lead">
+    Not actually a brokerage account
+  </div>
+</div>
+
+{% if alert != "" %}
+<div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+  {{ alert }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+
+<main class="container p-5">
+  <div class="display-4" style="font-size:50px">
+    Welcome!
+  </div>
+  <h1 class="lead">Enter details to register:</h1>
+  <form  action="/register" method="POST">
+      <div class="form-group">
+        <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Enter username" type="text" required>
+      </div>
+      <div class="form-group">
+        <input class="form-control" name="password" placeholder="Enter password" type="password" required>
+      </div>
+      <div class="form-group">
+        <input class="form-control" name="confirm" placeholder="Confirm password" type="password" required>
+      </div>
+      <button class="btn btn-primary" type="submit" id="submit-button">Register</button>
+      <a class="btn btn-primary" href="/login">Back to login</a>
+  </form>
+</main>
+{% endblock %}
