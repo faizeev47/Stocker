@@ -1,15 +1,14 @@
 {% extends 'layout.twig' %}
 {% block body %}
 
-{% if alert != "" %}
-  <div class="alert alert-{{type}} alert-dismissible fade show" role="alert">
-    {{alert}}
+{% for alert in alerts %}
+  <div class="alert alert-{{ alert.type}} alert-dismissible fade show" role="alert">
+    {{ alert.message }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-{% endif %}
-
+{% endfor %}
 <main class="container p-5">
   <label class="display-2">Dashboard</label>
   <br>
@@ -17,7 +16,7 @@
   <hr>
   <div class="container-fluid">
     <table class="table table-hover">
-      {% if alert != "" and type != "success" and type != "info" and type != "secondary" %}
+      {% if api_error == TRUE %}
       <thead>
           <tr>
               <th scope="col">Symbol</th>
@@ -57,7 +56,7 @@
       </thead>
       <tbody>
         {% for stock in stocks %}
-        <tr class="stock-links pointer" data-toggle="tooltip" title="Go to {{stock.name}} stock">
+        <tr class="stock-links pointer tippy" data-tippy-content="Go to {{stock.name}} stock">
           <td id="symbol">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
@@ -92,10 +91,10 @@
   </div>
 
 
-  <label class="display-4">In Focus</label><br><span class="badge badge-pill badge-success">Live</span>
+  <label class="display-4">Most Active</label><br><span class="badge badge-pill badge-success">Live</span>
   <hr>
   <div class="container-fluid">
-    <div class="infocus-stocks card-columns"></div>
+    <div class="mostactive-stocks card-columns"></div>
   </div>
 
   <label class="display-4">Gainers</label><br><span class="badge badge-pill badge-success">Live</span>
@@ -156,10 +155,14 @@
 </script>
 
 <script type="text/javascript">
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip({
-      delay: { "show": 1000, "hide": 100 },
-      placement: 'auto',
+  $('.tippy').each(function(index, element){
+    tippy(element,{
+      content: $(element).attr('data-tippy-content'),
+      animation: 'fade',
+      arrow: true,
+      arrowType: 'round',
+      delay: [300,10],
+      followCursor: 'horizontal',
     });
   });
 
@@ -167,9 +170,10 @@
     $('.stock-links').click(function(){
       window.location = "stockDetails/?symbol=" + $(this).find('#symbol').text();
     });
-    var traders = ['infocus', 'gainers', 'losers'];
+    var traders = ['mostactive', 'gainers', 'losers'];
     $(traders).each(function(index,element){
-      $.getJSON('https://api.iextrading.com/1.0/stock/market/list/'+element, function(list) {
+      var url = "https://sandbox.iexapis.com/stable/stock/market/list/"+element+"?token=Tpk_bddedf5951204978b511015e5a82070d";
+      $.getJSON(url, function(list) {
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
           var card = makeStockCard(list[i]['symbol'],

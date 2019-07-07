@@ -18,19 +18,18 @@
   }
   session_start();
 
+  $api_url = "https://sandbox.iexapis.com/stable/stock/%s/quote?token=Tpk_bddedf5951204978b511015e5a82070d";
+
   $routing = TRUE;
-  $routing_error = FALSE;
-  $error = array("header" => NULL, "code" => NULL, "message" => NULL);
-  $alert = "";
-  $type = "";
+  $error = array("isRouting"=>FALSE);
+  $alerts = array();
 
   while($routing){
     switch($route) {
 
       case 'login':
         if(isset($_SESSION['sess_id'])){
-          $alert = "User already logged in!";
-          $type = "info";
+          array_push($alerts, array("message" => "User already logged in!", "type" => "info"));
           $route = 'home';
           break;
         }
@@ -38,49 +37,37 @@
           $id_check = DatabaseObject::authUser($_POST['username'],$_POST['password']);
           if($id_check > 0){
             $_SESSION['sess_id'] = $id_check;
-            $alert = "User successfully logged in!";
-            $type = "info";
+            array_push($alerts, array("message" => "User successfully logged in!", "type" => "success"));
             $route = 'home';
             break;
           }
           else if($id_check == DatabaseObject::CONNECTION_PROBLEM){
-            $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-            $error['code'] = 501;
-            $error['message'] = 'Internal Server Error: Database not connected!';
+            $error = array("isRouting"=> TRUE, "message" => "Internal Server Error: Database not connected!");
             $route = 'error';
-            $routing_error = TRUE;
             break;
           }
           else if($id_check == DatabaseObject::UNKNOWN_DATA){
-            $alert = "Username or password incorrect!";
-            $type = "warning";
+            array_push($alerts, array("message" => "Username or password incorrect!", "type" => "warning"));
           }
           else{
-            $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-            $error['code'] = 501;
-            $error['message'] = 'Internal Server Error: Incorrect database query!';
+            $error = array("isRouting"=> TRUE, "message" => "Internal Server Error: Incorrect database query!");
             $route = 'error';
-            $routing_error = TRUE;
             break;
           }
         }
         echo $twig->render('login.twig',['title' => 'Login',
-                                    'alert' => $alert,
-                                    'type' => $type]);
-        $alert = "";
-        $type = "";
+                                    'alerts' => $alerts]);
+        $alerts = array();
         $routing = FALSE;
         break;
 
       case 'logout':
         session_destroy();
-        $alert = "User logged out!";
-        $type = "info";
+        array_push($alerts, array("message" => "User logged out!", "type" => "info"));
         echo $twig->render('login.twig',['title' => 'Login',
-                                    'alert' => $alert,
+                                    'alerts' => $alerts,
                                     'type' => $type]);
-        $alert = "";
-        $type = "";
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -98,49 +85,37 @@
           if($available == DatabaseObject::USER_UNIQUE && $pass == $conf){
             $insertion_check = DatabaseObject::addUser($username,$conf);
             if($insertion_check != DatabaseObject::CONNECTION_PROBLEM){
-              $alert = "Account created!";
-              $type = "success";
+              array_push($alerts, array("message" => "Account created!", "type" => "success"));
               echo $twig->render('login.twig',['title' => 'Login',
                                           'alert' => $alert,
                                           'type' => $type]);
-              $alert = "";
-              $type = "";
+              $alerts = array();
               $routing = FALSE;
               break;
             }
             else {
-              $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-              $error['code'] = 501;
-              $error['message'] = 'Internal Server Error: Problem during record insertion!';
+              $error = array("isRouting"=> TRUE, "message" => "Internal Server Error: Problem during record insertion!");
               $route = 'error';
-              $routing_error = TRUE;
               break;
             }
           }
           else{
             if ($pass != $conf){
-              $alert = "Passwords do not match!";
-              $type = "warning";
+              array_push($alerts, array("message" => "Passwords do not match!", "type" => "warning"));
             }
             else if ($available == DatabaseObject::USER_EXISTS){
-              $alert = "Username already exists!";
-              $type = "warning";
+              array_push($alerts, array("message" => "Username already exists!", "type" => "warning"));
             }
             else if ($available == DatabaseObject::CONNECTION_PROBLEM){
-              $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-              $error['code'] = 501;
-              $error['message'] = 'Internal Server Error: Database not connected!';
+              $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
               $route = 'error';
-              $routing_error = TRUE;
               break;
             }
           }
         }
         echo $twig->render('register.twig',['title' => 'Register',
-                                          'alert' => $alert,
-                                          'type' => $type]);
-        $alert = "";
-        $type = "";
+                                          'alerts' => $alerts]);
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -151,6 +126,7 @@
           break;
         }
         $do = new DatabaseObject($_SESSION['sess_id']);
+        $api_error = FALSE;
         if(!$do->error){
           $user_data = $do->getUserData();
           $stock_data = $do->getStocks();
@@ -158,7 +134,7 @@
           $total_holdings = $user_data['cash'];
           $stocks = array();
           while($row = $stock_data->fetch_assoc()){
-            $url = sprintf("https://api.iextrading.com/1.0/stock/%s/quote",$row['symbol']);
+            $url = sprintf($api_url, $row['symbol']);
             $ch = curl_init();
             curl_setopt($ch,CURLOPT_URL,$url);
             curl_setopt($ch,CURLOPT_HTTPGET,TRUE);
@@ -169,9 +145,9 @@
             curl_setopt($ch,CURLOPT_SSL_VERIFYSTATUS,FALSE);
 
             $json = curl_exec($ch);
-            if(!$json){
-              $alert = "Could not connect to IEX to get live stock information! Try again later.";
-              $type = "danger";
+            if(!$json && !$api_error){
+              $api_error = TRUE;
+              array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
             }
             curl_close($ch);
             $quote = json_decode($json);
@@ -185,21 +161,17 @@
           }
         }
         else{
-          $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-          $error['code'] = 501;
-          $error['message'] = 'Internal Server Error: Database not connected!';
-          $route = 'error';
-          $routing_error = TRUE;
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
+          $route = "error";
           break;
         }
-        echo $twig->render('dashboard.twig',['title' => 'Dashboard',
+        echo $twig->render('home.twig',['title' => 'Dashboard',
                                             'session' => 'start',
                                             'username' => $user_data['username'],
-                                            'stocks' => $stocks, 'alert' => $alert, 'type' => $type,
+                                            'stocks' => $stocks, 'alerts' => $alerts, 'api_error' => $api_error,
                                             'cash' => number_format((float)$user_data['cash'], 2, '.', ''),
                                             'total' => number_format((float)$total_holdings, 2, '.', '') ]);
-        $alert = "";
-        $type = "";
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -214,7 +186,7 @@
           if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $symbol = $_POST['symbol'];
             $shares = (int) $_POST['shares'];
-            $url = sprintf("https://api.iextrading.com/1.0/stock/%s/quote", $symbol);
+            $url = sprintf($api_url, $symbol);
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL,$url);
             curl_setopt($ch, CURLOPT_HTTPGET,TRUE);
@@ -240,32 +212,27 @@
                   else{
                     $alert = $shares." shares of ".$quote->companyName." bought!";
                   }
-                  $type = "success";
+                  array_push($alerts, array("message" => $alert, "type" => "success"));
                   $route = 'home';
                   break;
                 }
                 else{
                   $alert = "Not enough cash! Buy price for ".$shares." shares of ".$quote->companyName." stock is $".number_format((float)$buy_price, 2, '.', '').". You have $".number_format((float)$user_data['cash'], 2, '.', '');
-                  $type = "warning";
+                  array_push($alerts, array("message" => $alert, "type" => "warning"));
                 }
               }
               else{
-                $alert = "Stock does not exist!";
-                $type = "warning";
+                array_push($alerts, array("message" => "Stock does not exist!", "type" => "warning"));
               }
             }
             else{
-              $alert = "Could not connect to IEX to get live stock information! Try again later.";
-              $type = "danger";
+              array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
             }
           }
         }
         else{
-          $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-          $error['code'] = 501;
-          $error['message'] = 'Internal Server Error: Database not connected!';
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
           $route = 'error';
-          $routing_error = TRUE;
           break;
         }
         $symbol = "";
@@ -277,10 +244,9 @@
                                     'username' => $user_data['username'],
                                     'cash' => $user_data['cash'],
                                     'symbol' => $symbol,
-                                    'alert' => $alert,'type' => $type]);
+                                    'alerts' => $alerts]);
 
-        $alert = "";
-        $type = "";
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -300,7 +266,7 @@
           if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $symbol = $_POST['symbol'];
             $shares = (int)$_POST['shares'];
-            $url = sprintf("https://api.iextrading.com/1.0/stock/%s/quote",$symbol);
+            $url = sprintf($api_url, $symbol);
             $ch = curl_init();
             curl_setopt($ch,CURLOPT_URL,$url);
             curl_setopt($ch,CURLOPT_HTTPGET,TRUE);
@@ -327,41 +293,37 @@
                   } else {
                     $alert = $shares." shares of ".$quote->companyName." sold!";
                   }
+                  array_push($alerts, array("message" => $alert, "type" => "success"));
 
                   if ($rem_shares == 0){
-                    $alert = $alert." You now do not own any shares of this stock.";
+                    $alert = " You now do not own any shares of this stock.";
                   } else if ($rem_shares == 1){
-                    $alert = $alert." You now own 1 share of this stock.";
+                    $alert = " You now own 1 share of this stock.";
                   } else{
-                    $alert = $alert." You now own ".$rem_shares." shares of this stock.";
+                    $alert = " You now own ".$rem_shares." shares of this stock.";
                   }
-                  $type = "success";
+
+                  array_push($alerts, array("message" => $alert, "type" => "info"));
                   $route = 'home';
                   break;
                 }
                 else{
-                  $alert = "You do not own ".$shares." ".$quote->companyName." stocks";
-                  $type = "warning";
+                  array_push($alerts, array("message" => "You do not own ".$shares." ".$quote->companyName." stocks", "type" => "warning"));
                 }
 
               }
               else {
-                $alert = "Stock does not exist!";
-                $type = "warning";
+                array_push($alerts, array("message" => "Stock does not exist!", "type" => "warning"));
               }
             }
             else {
-              $alert = "Could not connect to IEX to get live stock information! Try again later.";
-              $type = "danger";
+              array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
             }
           }
         }
         else{
-          $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-          $error['code'] = 501;
-          $error['message'] = 'Internal Server Error: Database not connected!';
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
           $route = 'error';
-          $routing_error = TRUE;
           break;
         }
         $symbol = "";
@@ -376,9 +338,8 @@
                                       'cash' => $user_data['cash'],
                                       'symbol' => $symbol,
                                       'stocks_owned' => $stocks_owned,
-                                      'alert' => $alert, 'type' => $type]);
-        $alert = "";
-        $type = "";
+                                      'alerts' => $alerts]);
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -405,11 +366,8 @@
           }
         }
         else{
-          $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-          $error['code'] = 501;
-          $error['message'] = 'Internal Server Error: Database not connected!';
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
           $route = 'error';
-          $routing_error = TRUE;
           break;
         }
         echo $twig->render('history.twig',['title' => 'History',
@@ -440,7 +398,7 @@
           }
           else if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $symbol = $_POST['symbol'];
-            $url = sprintf("https://api.iextrading.com/1.0/stock/%s/quote",$symbol);
+            $url = sprintf($api_url, $symbol);
             $ch = curl_init();
             curl_setopt($ch,CURLOPT_URL,$url);
             curl_setopt($ch,CURLOPT_HTTPGET,TRUE);
@@ -457,22 +415,17 @@
               if($quote){
                 $quoted = TRUE;
               }else {
-                $alert = "Stock does not exist!";
-                $type = "warning";
+                array_push($alerts, array("message" => "Stock does not exist!", "type" => "warning"));
               }
             }
             else{
-              $alert = 'Could not connect to IEX to get live stock information! Try again later.';
-              $type = "danger";
+              array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
             }
           }
         }
         else{
-          $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-          $error['code'] = 501;
-          $error['message'] = 'Internal Server Error: Database not connected!';
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
           $route = 'error';
-          $routing_error = TRUE;
           break;
         }
         echo $twig->render('quote.twig',['title' => 'Quote',
@@ -482,10 +435,8 @@
                                     'symbol' => $quote->symbol,
                                     'company' => $quote->companyName,
                                     'price' => $quote->latestPrice,
-                                    'alert' => $alert,
-                                    'type' => $type]);
-        $alert = "";
-        $type = "";
+                                    'alerts' => $alerts]);
+        $alerts = array();
         $routing = FALSE;
         break;
 
@@ -513,12 +464,9 @@
           $routing=FALSE;
         }
         else{
-          header('HTTP/1.0 500 Internal Server Error');
-          echo $twig->render('error.twig',['title' => 'Error',
-                                        'code' => 500,
-                                        'error' => 'Could not connect to database!']);
-          $routing = FALSE;
-
+          $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
+          $route = "error";
+          break;
         }
         break;
 
@@ -536,17 +484,14 @@
               $do->updateCash($amount);
               $do->close();
               $alert = "$".number_format((float)$amount, 2, '.', '')." deposited into your account! You now have $".number_format((float)$user_data['cash'], 2, '.', '');
-              $type = "success";
+              array_push($alerts, array("message" => $alert, "type" => "success"));
               $route = 'home';
               break;
             }
           }
           else{
-            $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-            $error['code'] = 501;
-            $error['message'] = 'Internal Server Error: Database not connected!';
+            $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
             $route = 'error';
-            $routing_error = TRUE;
             break;
           }
 
@@ -567,17 +512,14 @@
               $do->updateCash(-$amount);
               $do->close();
               $alert = "$".number_format((float)$amount, 2, '.', '')." withdrawn from your account! You now have $".number_format((float)$user_data['cash'], 2, '.', '');
-              $type = "secondary";
+              array_push($alerts, array("message" => $alert, "type" => "secondary"));
               $route = 'home';
               break;
             }
           }
           else{
-            $error['header'] = 'HTTP/1.0 501 Internal Server Error';
-            $error['code'] = 501;
-            $error['message'] = 'Internal Server Error: Database not connected!';
+            $error = array("isRouting"=> TRUE, "message" => 'Internal Server Error: Database not connected!');
             $route = 'error';
-            $routing_error = TRUE;
             break;
           }
 
@@ -585,17 +527,17 @@
         break;
 
       default:
-        if($routing_error){
-          header($error['header']);
+        if($error['isRouting']){
+          header('HTTP/1.0 500 Internal Server Error');
           echo $twig->render('error.twig',['title' => 'Error',
-                                        'code' => $error['code'],
+                                        'code' => 500,
                                         'error' => $error['message']]);
-          $routing_error = FALSE;
+          $error = array("isRouting" => FALSE);
         }
         else{
           header('HTTP/1.0 404 Not Found');
           echo $twig->render('error.twig',['title' => 'Error',
-                                            'code' => '404',
+                                            'code' => 404,
                                             'error' => 'Not Found']);
         }
         $routing = FALSE;

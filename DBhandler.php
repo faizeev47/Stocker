@@ -13,9 +13,10 @@
   const IS_SALE = 0;
 
   function __construct($user_id){
-    $this->connection = new mysqli('localhost','root','toor', 'finance');
+    $new_conn = new mysqli('localhost','root','toor', 'finance');
+    $this->connection = $new_conn;
     $this->user_id = (int)$user_id;
-    $error = $this->connection->connect_error;
+    $this->error = $new_conn->connect_error;
   }
 
   public static function addUser($username,$password){
