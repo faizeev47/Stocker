@@ -203,8 +203,6 @@
 
 
 <script type="text/javascript">
-
-
   function createDayGraph(canvas, timeString, chart){
     var labels = [];
     var high = [];
@@ -276,7 +274,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $.getJSON("https://api.iextrading.com/1.0/stock/"+"{{ symbol }}"+"/batch?types=quote,company,financials", function(quote){
+    $.getJSON("{{ b }}{{ symbol }}/batch?{{ t }}&types=quote,company,financials", function(quote){
       $('#name').html(quote.company.companyName);
 
       $('#symbol').html(quote.company.symbol);
@@ -326,9 +324,7 @@
 
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/1d?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
-      console.log('hola');
-      console.log(chart);
+    $.getJSON("{{ b }}{{symbol}}/chart/1d?{{t}}", function(chart){
       var labels = [];
       var high = [];
       var low = [];
@@ -380,28 +376,28 @@
 
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/1m?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/1m?{{t}}", function(chart){
       createDayGraph('priceHistory1m','1 Month',chart);
 
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/3m?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/3m?{{t}}", function(chart){
       createDayGraph('priceHistory3m','3 months',chart)
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/6m?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/6m?{{t}}", function(chart){
       createDayGraph('priceHistory6m','6 months',chart)
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/1y?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/1y?{{t}}", function(chart){
       createDayGraph('priceHistory1y','1 Year',chart)
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/2y?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/2y?{{t}}", function(chart){
       createDayGraph('priceHistory2y','2 Years',chart)
     });
 
-    $.getJSON("https://sandbox.iexapis.com/stable/stock/"+"{{symbol}}"+"/chart/5y?token=Tpk_bddedf5951204978b511015e5a82070d", function(chart){
+    $.getJSON("{{b}}{{symbol}}/chart/5y?{{t}}", function(chart){
       createDayGraph('priceHistory5y','5 Years',chart)
       var prices = [];
       var x = [];
@@ -441,9 +437,7 @@
       var date_array = chart[l-1].date.split('-');
       var last_date = new Date();
       last_date.setFullYear(parseInt(date_array[0]), parseInt(date_array[1]), parseInt(date_array[2]));
-      console.log(last_date);
       last_date.setDate(last_date.getDate() + 1);
-      console.log(last_date);
       day = 1;
       var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       for(var i = n; i < n + 365; i++){

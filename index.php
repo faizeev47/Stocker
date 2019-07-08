@@ -1,4 +1,5 @@
 <?php
+  require_once 'encryption.php';
   require 'vendor/autoload.php';
   include "DBHandler.php";
   $loader = new \Twig\Loader\FilesystemLoader('templates');
@@ -18,7 +19,7 @@
   }
   session_start();
 
-  $api_url = "https://sandbox.iexapis.com/stable/stock/%s/quote?token=Tpk_bddedf5951204978b511015e5a82070d";
+  $api_url = $b."%s/quote?".$t;
 
   $routing = TRUE;
   $error = array("isRouting"=>FALSE);
@@ -168,7 +169,7 @@
         echo $twig->render('home.twig',['title' => 'Dashboard',
                                             'session' => 'start',
                                             'username' => $user_data['username'],
-                                            'stocks' => $stocks, 'alerts' => $alerts, 'api_error' => $api_error,
+                                            'stocks' => $stocks, 'alerts' => $alerts, 'api_error' => $api_error, 'b' => $b, 't' => $t,
                                             'cash' => number_format((float)$user_data['cash'], 2, '.', ''),
                                             'total' => number_format((float)$total_holdings, 2, '.', '') ]);
         $alerts = array();
@@ -456,7 +457,7 @@
           }
           echo $twig->render('stockDetails.twig',['title' => 'Stock Details',
                                       'session' => 'start',
-                                      'username' => $user_data['username'],
+                                      'username' => $user_data['username'], 'b' => $b, 't' => $t,
                                       'cash' => $user_data['cash'],
                                       'shares' => $shares,
                                       'symbol' => $symbol]);

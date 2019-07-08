@@ -172,7 +172,7 @@
     });
     var traders = ['mostactive', 'gainers', 'losers'];
     $(traders).each(function(index,element){
-      var url = "https://sandbox.iexapis.com/stable/stock/market/list/"+element+"?token=Tpk_bddedf5951204978b511015e5a82070d";
+      var url = "{{ b }}market/list/"+element+"?{{ t }}";
       $.getJSON(url, function(list) {
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
