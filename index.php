@@ -1,7 +1,7 @@
 <?php
   require_once 'encryption.php';
   require 'vendor/autoload.php';
-  include "DBHandler.php";
+  include "DBHandler-v2.php";
   $loader = new \Twig\Loader\FilesystemLoader('templates');
   $twig = new \Twig\Environment($loader, []);
 
@@ -38,7 +38,9 @@
           $id_check = DatabaseObject::authUser($_POST['username'],$_POST['password']);
           if($id_check > 0){
             $_SESSION['sess_id'] = $id_check;
-            header("location:/home");
+            $routing = FALSE;
+            header("location:/")
+            break;
           }
           else if($id_check == DatabaseObject::CONNECTION_PROBLEM){
             $error = array("isRouting"=> TRUE, "message" => "Internal Server Error: Database not connected!");
@@ -392,7 +394,7 @@
           $quoted = FALSE;
           if ($_SERVER['REQUEST_METHOD'] == 'GET'){
             echo $twig->render('quote.twig',['title' => 'Quote',
-                                        'session' => 'start', 
+                                        'session' => 'start',
                                         'username' => $user_data['username'],
                                         'cash' => $user_data['cash']]);
             $routing = FALSE;
