@@ -192,9 +192,6 @@
   <div id="regressionGraph"></div>
 
 </div>
-<div class="container" style="text-align:center;">
-  <a class="btn btn-primary" href="/neuralprediction.php/?symbol={{symbol}}">Prediction for {{symbol}}</a>
-</div>
 
 {% endblock %}
 
@@ -274,7 +271,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $.getJSON("{{ b }}{{ symbol }}/batch?{{ t }}&types=quote,company,financials", function(quote){
+    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=quote,company,financials", function(quote){
       $('#name').html(quote.company.companyName);
 
       $('#symbol').html(quote.company.symbol);
@@ -324,7 +321,7 @@
 
     });
 
-    $.getJSON("{{ b }}{{symbol}}/chart/1d?{{t}}", function(chart){
+    $.getJSON("{{ b }}/stock/{{symbol}}/chart/1d?{{t}}", function(chart){
       var labels = [];
       var high = [];
       var low = [];
@@ -376,28 +373,28 @@
 
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/1m?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/1m?{{t}}", function(chart){
       createDayGraph('priceHistory1m','1 Month',chart);
 
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/3m?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/3m?{{t}}", function(chart){
       createDayGraph('priceHistory3m','3 months',chart)
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/6m?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/6m?{{t}}", function(chart){
       createDayGraph('priceHistory6m','6 months',chart)
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/1y?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/1y?{{t}}", function(chart){
       createDayGraph('priceHistory1y','1 Year',chart)
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/2y?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/2y?{{t}}", function(chart){
       createDayGraph('priceHistory2y','2 Years',chart)
     });
 
-    $.getJSON("{{b}}{{symbol}}/chart/5y?{{t}}", function(chart){
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/5y?{{t}}", function(chart){
       createDayGraph('priceHistory5y','5 Years',chart)
       var prices = [];
       var x = [];

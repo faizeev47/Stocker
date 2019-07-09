@@ -24,6 +24,7 @@
 
       <script src="/js/highcharts.js"></script>
 
+      <script type="text/javascript" src="/js/EasyAutocomplete-1.3.5/jquery.easy-autocomplete.min.js"></script>
       <title>Stocker: {{ title }}</title>
 
   </head>
@@ -37,7 +38,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav mr-auto mt-2">
-                        <li class="nav-item"><a class="nav-link {% if title ==  'Buy' %}disabled{% endif %}" href="/buy" disabled>Buy</a></li>
+                        <li class="nav-item"><a class="nav-link {% if title ==  'Buy' %}disabled{% endif %}" href="/buy">Buy</a></li>
                         <li class="nav-item"><a class="nav-link {% if title ==  'Sell' %}disabled{% endif %}" href="/sell">Sell</a></li>
                         <li class="nav-item"><a class="nav-link {% if title ==  'Quote' %}disabled{% endif %}" href="/quote">Quote</a></li>
                         <li class="nav-item"><a class="nav-link {% if title ==  'History' %}disabled{% endif %}" href="/history">History</a></li>

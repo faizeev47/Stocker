@@ -19,7 +19,7 @@
   }
   session_start();
 
-  $api_url = $b."%s/quote?".$t;
+  $api_url = $b."/stock/%s/quote?".$t;
 
   $routing = TRUE;
   $error = array("isRouting"=>FALSE);
@@ -38,9 +38,7 @@
           $id_check = DatabaseObject::authUser($_POST['username'],$_POST['password']);
           if($id_check > 0){
             $_SESSION['sess_id'] = $id_check;
-            array_push($alerts, array("message" => "User successfully logged in!", "type" => "success"));
-            $route = 'home';
-            break;
+            header("location:/home");
           }
           else if($id_check == DatabaseObject::CONNECTION_PROBLEM){
             $error = array("isRouting"=> TRUE, "message" => "Internal Server Error: Database not connected!");
@@ -63,6 +61,9 @@
         break;
 
       case 'logout':
+        if(!isset($_SESSION['sess_id'])){
+          header("location:/login");
+        }
         session_destroy();
         array_push($alerts, array("message" => "User logged out!", "type" => "info"));
         echo $twig->render('login.twig',['title' => 'Login',

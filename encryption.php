@@ -89,6 +89,7 @@
     }
     return $plaintext;
   }
+  
   $e =  explode("\n",fread($file = fopen("API","r"), filesize("API")+1));
   $b = base64_decode(decrypt($e[0], "thydarestepethonlanduncharted"));
   $t = base64_decode(decrypt($e[1], "jackalsdonthaveahearts"));
