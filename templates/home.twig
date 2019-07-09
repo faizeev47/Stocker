@@ -109,6 +109,18 @@
     <div class="losers-stocks card-columns"></div>
   </div>
 
+  <label class="display-4">IEX Volume</label><br><span class="badge badge-pill badge-success">Live</span>
+  <hr>
+  <div class="container-fluid">
+    <div class="iexvolume-stocks card-columns"></div>
+  </div>
+
+  <label class="display-4">IEX Percent</label><br><span class="badge badge-pill badge-success">Live</span>
+  <hr>
+  <div class="container-fluid">
+    <div class="iexpercent-stocks card-columns"></div>
+  </div>
+
 </main>
 {% endblock %}
 
@@ -170,7 +182,7 @@
     $('.stock-links').click(function(){
       window.location = "stockDetails/?symbol=" + $(this).find('#symbol').text();
     });
-    var traders = ['mostactive', 'gainers', 'losers'];
+    var traders = ['mostactive', 'gainers', 'losers','iexvolume','iexpercent'];
     $(traders).each(function(index,element){
       var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}";
       $.getJSON(url, function(list) {

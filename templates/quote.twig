@@ -22,20 +22,13 @@
   <a class="btn btn-primary" href="/buy">Buy this stock</a>
   <a class="btn btn-primary" href="/stockDetails/?symbol={{symbol}}">Get detailed stock <span class="badge badge-pill badge-success">Live</span></a>
 {% else %}
-  <form action="/quote" method="POST"  autocomplete="off">
+  <form action="/quote" method="POST">
     <h1 class="lead">Stock quote symbol:</h1>
     <div class="form-group">
-      <input autofocus class="form-control" type="text" id="symbol-input" name="symbol" placeholder="Symbol" required>
+      <input class="form-control" type="text" name="symbol" placeholder="Symbol" required>
     </div>
     <button class="btn btn-primary" type="submit" id="submit-button">Lookup</button>
   </form>
 {% endif %}
 </main>
-{% endblock %}
-
-
-{% block scripts %}
-<script type="text/javascript">
-
-</script>
 {% endblock %}

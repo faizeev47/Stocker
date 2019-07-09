@@ -392,7 +392,7 @@
           $quoted = FALSE;
           if ($_SERVER['REQUEST_METHOD'] == 'GET'){
             echo $twig->render('quote.twig',['title' => 'Quote',
-                                        'session' => 'start',
+                                        'session' => 'start', 
                                         'username' => $user_data['username'],
                                         'cash' => $user_data['cash']]);
             $routing = FALSE;
