@@ -511,7 +511,7 @@
         $user_data = $do->getUserData();
         $user_stk_data = $do->getStockData($symbol);
         $shares = 0;
-        if ($usr_stk_data['numRows'] == 1) {
+        if ($user_stk_data['numRows'] == 1) {
           $shares = $user_stk_data['result'][0]['shares'];
         }
         echo $twig->render('stockDetails.twig',['title' => 'Stock Details',
