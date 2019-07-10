@@ -42,7 +42,7 @@
       $res = $this->select('transactions',['user_id'],[$this->user_id],
       ['trans_id', 'shares', 'user_id', 'symbol', 'price', 'DATE(made_on)', 'TIME(made_on)',
       "CASE is_purchase WHEN 1 THEN 'purchase' ELSE 'sale' END AS 'transaction'"]);
-      return $res['result'];
+      return $res;
     }
 
     public function buyStock($symbol, $shares_bought){
@@ -70,7 +70,7 @@
     }
 
     public function addTransaction($symbol, $trans_price, $shares, $trans_type){
-      $this->insert('transaction',
+      $this->insert('transactions',
       ['user_id', 'symbol', 'price', 'is_purchase', 'shares'],
       [$this->user_id, $symbol, round((float)$trans_price,2), $trans_type, $shares]);
     }
@@ -105,7 +105,6 @@
           }
         }
       }
-      echo $sql."<br>";
       $stmt = $this->db->prepare($sql);
       for($i = 0 ; $i < $l; $i++){
         $stmt->bindParam(':v'.$i, $values[$i]);
@@ -138,7 +137,6 @@
         }
       }
       $sql .= ")";
-      echo $sql."<br>";
       $stmt = $this->db->prepare($sql);
       for($i = 0; $i < $l; $i++){
         $stmt->bindParam(':v'.$i, $values[$i]);
@@ -165,7 +163,6 @@
           $sql .= " AND ";
         }
       }
-      echo $sql."<br>";
       $stmt = $this->db->prepare($sql);
       for($i = 0; $i < $c; $i++){
         $stmt->bindParam(':sv'.$i, $changes[$i]);
@@ -189,7 +186,6 @@
           $sql .= " AND ";
         }
       }
-      echo $sql."<br>";
       $stmt = $this->db->prepare($sql);
       for($i = 0 ; $i < $l; $i++){
         $stmt->bindParam(':v'.$i, $values[$i]);

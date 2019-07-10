@@ -32,3 +32,18 @@
 {% endif %}
 </main>
 {% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+$('.badge').each(function(index, element){
+  console.log(index);
+  tippy(element,{
+    content: 'Live content from IEX API',
+    animation: 'fade',
+    arrow: true,
+    arrowType: 'sharp',
+    delay: [10,10]
+  });
+});
+</script>
+{% endblock %}

@@ -271,6 +271,7 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+
     $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=quote,company,financials", function(quote){
       $('#name').html(quote.company.companyName);
 

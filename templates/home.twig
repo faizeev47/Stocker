@@ -167,6 +167,16 @@
 </script>
 
 <script type="text/javascript">
+  $('.badge').each(function(index, element){
+    console.log(index);
+    tippy(element,{
+      content: 'Live content from IEX API',
+      animation: 'fade',
+      arrow: true,
+      arrowType: 'sharp',
+      delay: [10,10]
+    });
+  });
   $('.tippy').each(function(index, element){
     tippy(element,{
       content: $(element).attr('data-tippy-content'),
@@ -177,6 +187,7 @@
       followCursor: 'horizontal',
     });
   });
+
 
   $(document).ready(function(){
     $('.stock-links').click(function(){
