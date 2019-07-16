@@ -9,13 +9,14 @@
     </button>
   </div>
 {% endfor %}
+
 <main class="container p-5">
   <label class="display-2">Dashboard</label>
   <br>
   <label class="display-4">Portfolio</label>
   <hr>
   <div class="container-fluid">
-    <table class="table table-hover">
+    <table class="table table-responsive-sm table-hover">
       {% if api_error == TRUE %}
       <thead>
           <tr>
@@ -26,7 +27,7 @@
       <tbody>
         {% for stock in stocks %}
         <tr>
-            <td>{{ stock.symbol }}</td>
+            <td class="trade-font">{{ stock.symbol }}</td>
             <td>{{ stock.shares }}</td>
 
         </tr>
@@ -36,12 +37,12 @@
         </tr>
         {% endfor %}
         <tr>
-          <td><strong>User</strong></td>
-          <td><strong>${{ cash }}</strong></td>
+          <td style="font-size:18px;"><strong>User</strong></td>
+          <td class="cash-text" style="font-size:18px;"><strong>${{ cash }}</strong></td>
         </tr>
         <tr>
-          <td><strong>Total</strong></td>
-          <td><strong>${{ cash }}</strong></td>
+          <td style="font-size:18px;"><strong>Total</strong></td>
+          <td class="cash-text" style="font-size:18px;"><strong>${{ cash }}</strong></td>
         </tr>
       </tbody>
       {% else %}
@@ -57,12 +58,11 @@
       <tbody>
         {% for stock in stocks %}
         <tr class="stock-links pointer tippy" data-tippy-content="Go to {{stock.name}} stock">
-          <td id="symbol">{{ stock.symbol }}</td>
+          <td id="symbol" class="trade-font">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
-          <td>${{ stock.price }}</td>
-          <td>${{ stock.total }}</td>
-          </a>
+          <td class="cash-text">${{ stock.price }}</td>
+          <td class="cash-text">${{ stock.total }}</td>
         </tr>
 
         {% else %}
@@ -71,18 +71,18 @@
         </tr>
         {% endfor %}
         <tr>
-          <td><strong>User</strong></td>
+          <td style="font-size:18px;"><strong>User</strong></td>
           <td></td>
           <td></td>
           <td></td>
-          <td><strong>${{ cash }}</strong></td>
+          <td class="cash-text" style="font-size:18px;">${{ cash }}</td>
         </tr>
         <tr>
-          <td><strong>Total</strong></td>
+          <td style="font-size:18px;"><strong>Total</strong></td>
           <td></td>
           <td></td>
           <td></td>
-          <td><strong>${{ total }}</strong></td>
+          <td class="cash-text" style="font-size:18px;">${{ total }}</td>
         </tr>
       </tbody>
 
@@ -90,36 +90,25 @@
     </table>
   </div>
 
+  <section id="mostative-section">
 
-  <label class="display-4">Most Active</label><br><span class="badge badge-pill badge-success">Live</span>
-  <hr>
-  <div class="container-fluid">
-    <div class="mostactive-stocks card-columns"></div>
-  </div>
+  </section>
 
-  <label class="display-4">Gainers</label><br><span class="badge badge-pill badge-success">Live</span>
-  <hr>
-  <div class="container-fluid">
-    <div class="gainers-stocks card-columns"></div>
-  </div>
+  <section id="gainers-section">
 
-  <label class="display-4">Losers</label><br><span class="badge badge-pill badge-success">Live</span>
-  <hr>
-  <div class="container-fluid">
-    <div class="losers-stocks card-columns"></div>
-  </div>
+  </section>
 
-  <label class="display-4">IEX Volume</label><br><span class="badge badge-pill badge-success">Live</span>
-  <hr>
-  <div class="container-fluid">
-    <div class="iexvolume-stocks card-columns"></div>
-  </div>
+  <section id="losers-section">
 
-  <label class="display-4">IEX Percent</label><br><span class="badge badge-pill badge-success">Live</span>
-  <hr>
-  <div class="container-fluid">
-    <div class="iexpercent-stocks card-columns"></div>
-  </div>
+  </section>
+
+  <section id="iexvolume-section">
+
+  </section>
+
+  <section id="iexpercent-section">
+
+  </section>
 
 </main>
 {% endblock %}
@@ -144,8 +133,8 @@
       img = "<img style=\"width:8%;height:10%;color:red;\"src=\"/static/caret-down.png\" alt=\"caret top\">";
       color = "red";
     }
-    var text = "$" + price +
-                "<br><span style='color:" + color + ";font-weight:bold;'>"
+    var text = "<span class='cash-text'>$" + formatNumber(price) +
+                "</span><br><span style='color:" + color + ";font-weight:bold;'>"
                 + img + changePercent.toFixed(2) + "%<br>"+ img + "$" + change +" </span>"
     $(cardText).html(text);
     var cardBody = document.createElement('div');
@@ -153,50 +142,56 @@
     $(cardBody).append(cardTitle);
     $(cardBody).append(cardText);
     var cardHeader = document.createElement('div');
-    $(cardHeader).addClass('card-header');
+    $(cardHeader).addClass('card-header trade-font');
     $(cardHeader).text(symbol);
     var card = document.createElement('div');
+    $(card).attr('data-content-tippy','Go to '+companyName+' stock');
     $(card).addClass('card border-secondary');
     $(card).append(cardHeader);
     $(card).append(cardBody);
     var link = document.createElement('a');
     $(link).append(card);
-    $(link).attr('href',"stockDetails/?symbol=" + symbol);
+    $(link).attr('href',"detailedQuote?symbol=" + symbol);
     return link;
+  }
+  function makeStockSection(heading, className){
+    var label = document.createElement('label');
+    $(label).addClass('display-4');
+    $(label).html(heading);
+    var br = document.createElement('br');
+    var badge = document.createElement('span');
+    $(badge).addClass('badge badge-pill badge-success');
+    $(badge).html('Live');
+    var hr = document.createElement('hr');
+    var container = document.createElement('div');
+    $(container).addClass('container-fluid');
+    var cardCols = document.createElement('div');
+    $(cardCols).addClass(className+"-stocks card-columns");
+    $(container).append(cardCols);
+    console.log(className);
+    $('#' + className + "-section").append(label);
+    $('#' + className + "-section").append(br);
+    $('#' + className + "-section").append(badge);
+    $('#' + className + "-section").append(hr);
+    $('#' + className + "-section").append(container);
   }
 </script>
 
 <script type="text/javascript">
-  $('.badge').each(function(index, element){
-    console.log(index);
-    tippy(element,{
-      content: 'Live content from IEX API',
-      animation: 'fade',
-      arrow: true,
-      arrowType: 'sharp',
-      delay: [10,10]
-    });
-  });
-  $('.tippy').each(function(index, element){
-    tippy(element,{
-      content: $(element).attr('data-tippy-content'),
-      animation: 'fade',
-      arrow: true,
-      arrowType: 'round',
-      delay: [300,10],
-      followCursor: 'horizontal',
-    });
-  });
-
-
   $(document).ready(function(){
     $('.stock-links').click(function(){
-      window.location = "stockDetails/?symbol=" + $(this).find('#symbol').text();
+      window.location = "detailedQuote?symbol=" + $(this).find('#symbol').text();
     });
+
+    var headings = ['Most Active', 'Gainers', 'Losers', 'IEX Volume', 'IEX Percent'];
     var traders = ['mostactive', 'gainers', 'losers','iexvolume','iexpercent'];
+
     $(traders).each(function(index,element){
+      console.log('traders: '+element);
+      makeStockSection(headings[index], element);
       var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}";
       $.getJSON(url, function(list) {
+        console.log(list);
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
           var card = makeStockCard(list[i]['symbol'],
@@ -204,8 +199,36 @@
                list[i].latestPrice,
                list[i].changePercent,
                list[i].change);
+           tippy(card,{
+             content: "Go to " + list[i].companyName + " stock",
+             animation: 'fade',
+             arrow: true,
+             arrowType: 'round',
+             delay: [500,5],
+             followCursor: true,
+           });
           $('.'+element+'-stocks').append(card);
         }
+      });
+    });
+
+    $('.badge').each(function(index, element){
+      tippy(element,{
+        content: 'Live content from IEX API',
+        animation: 'fade',
+        arrow: true,
+        arrowType: 'sharp',
+        delay: [10,10]
+      });
+    });
+    $('.tippy').each(function(index, element){
+      tippy(element,{
+        content: $(element).attr('data-tippy-content'),
+        animation: 'fade',
+        arrow: true,
+        arrowType: 'round',
+        delay: [300,10],
+        followCursor: 'horizontal',
       });
     });
   });

@@ -14,12 +14,12 @@
     $route = 'home';
   }
   // if more than 2 elements or an incorrect query
-  else if(count($elements) > 1 && explode('=', $elements[1])[0] != '?symbol') {
+  else if(count($elements) > 1){
     $route = 'error';
   }
   // else route to specified path
   else {
-    $route = $elements[0];
+    $route = explode('?',$elements[0])[0];
   }
   // start new session
   session_start();
@@ -182,15 +182,15 @@
           array_push($stocks, array('symbol' => $row['symbol'],
                                     'name' => $quote->companyName,
                                     'shares' => $row['shares'],
-                                    'price' =>  number_format((float)$quote->latestPrice, 2, '.', ''),
-                                    'total' => number_format((float)$share_holding, 2, '.', '')));
+                                    'price' =>  number_format((float)$quote->latestPrice, 2),
+                                    'total' => number_format((float)$share_holding, 2)));
         }
         echo $twig->render('home.twig',['title' => 'Dashboard',
                                             'session' => 'start',
                                             'username' => $user_data['username'],
                                             'stocks' => $stocks, 'alerts' => $alerts, 'api_error' => $api_error, 'b' => $b, 't' => $t,
-                                            'cash' => number_format((float)$user_data['cash'], 2, '.', ''),
-                                            'total' => number_format((float)$total_holdings, 2, '.', '') ]);
+                                            'cash' => number_format((float)$user_data['cash'], 2),
+                                            'total' => number_format((float)$total_holdings, 2) ]);
         $alerts = array();
         $routing = FALSE;
         break;
@@ -280,7 +280,7 @@
         }
 
         $symbol = "";
-        if($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['symbol'])){
+        if(isset($_GET['symbol'])){
           $symbol = $_GET['symbol'];
         }
         echo $twig->render('buy.twig',['title' => 'Buy',
@@ -382,8 +382,8 @@
 
         // if default value for stock symbol input field available in get request
         $symbol = "";
-        if($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['symbol'])){
-          if(in_array($_GET['symbol'],$stocks_owned)){
+        if(isset($_GET['symbol'])){
+          if(in_array($_GET['symbol'],$stocks)){
             $symbol = $_GET['symbol'];
           }
         }
@@ -415,7 +415,7 @@
           array_push($history, array('trans_id' => $row['trans_id'],
                       'symbol' => $row['symbol'],
                       'shares' => $row['shares'],
-                      'price' => $row['price'],
+                      'price' => number_format((float)$row['price'], 2) ,
                       'date' => $row['DATE(made_on)'],
                       'time' => $row['TIME(made_on)'],
                       'type' => $row['transaction']));
@@ -442,7 +442,7 @@
         // variable to let twig template know upon succesful quote
         $quoted = FALSE;
         // user requested page to submit a get request
-        if ($_SERVER['REQUEST_METHOD'] == 'GET'){
+        if (!isset($_GET['symbol'])){
           echo $twig->render('quote.twig',['title' => 'Quote',
                                       'session' => 'start',
                                       'username' => $user_data['username'],
@@ -451,9 +451,9 @@
           break;
         }
         // user submitted quote request via post
-        else if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+        else {
           // extract arguments from post request
-          $symbol = $_POST['symbol'];
+          $symbol = $_GET['symbol'];
 
           // connect to API to get stock information
           $url = sprintf($api_url, $symbol);
@@ -483,11 +483,13 @@
               $quoted = TRUE;
             }
           }
+
         }
         // render quoteD templated
         echo $twig->render('quote.twig',['title' => 'Quote',
                                     'session' => 'start',
                                     'username' => $user_data['username'],
+                                    'cash' => $user_data['cash'],
                                     'quoted' => $quoted,
                                     'symbol' => $quote->symbol,
                                     'company' => $quote->companyName,
@@ -497,7 +499,7 @@
         $routing = FALSE;
         break;
 
-      case 'stockDetails':
+      case 'detailedQuote':
         // reroute to login if user is not logged in
         if(!isset($_SESSION['sess_id'])){
           $route = 'login';
@@ -514,7 +516,7 @@
         if ($user_stk_data['numRows'] == 1) {
           $shares = $user_stk_data['result'][0]['shares'];
         }
-        echo $twig->render('stockDetails.twig',['title' => 'Stock Details',
+        echo $twig->render('detailedQuote.twig',['title' => 'Detailed Quote',
                                     'session' => 'start',
                                     'username' => $user_data['username'], 'b' => $b, 't' => $t,
                                     'cash' => $user_data['cash'],

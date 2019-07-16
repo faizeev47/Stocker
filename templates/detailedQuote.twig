@@ -1,0 +1,807 @@
+{% extends 'layout.twig' %}
+{% block body %}
+<main class="container-fluid p-5" style="text-align:left;">
+  <div class="row">
+    <div class="col-lg">
+      <h1 class="display-2 trade-font" style="text-align:center">{{symbol}}</h1>
+      <hr>
+      <img id="logo" class="img-fluid float-right" src="https://storage.googleapis.com/iex/api/logos/{{symbol}}.png">
+      <div class="display-3 company-attribute" id="companyName"></div>
+      <div class="subtitle display-4 company-attribute" id="sector"></div>
+      <hr style="margin-top:80px">
+      <h1 class="sub-heading lead">Profile</h1>
+      <p class="company-attribute" id="description"></p>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b class="sub-heading lead">CEO</b> <hr>
+          <div class="company-attribute" id="CEO"></div>
+        </div>
+        <div class="col">
+          <b class="sub-heading lead">Website</b><hr>
+          <a class="company-attribute" id="website"></a>
+        </div>
+        <div class="col">
+          <b class="sub-heading lead">Industry</b> <hr>
+          <div class="company-attribute" id="industry"></div>
+        </div>
+
+        <div class="col">
+          <b class="sub-heading lead">Exchange</b> <hr>
+          <div class="company-attribute" id="exchange"></div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <div id="tags"></div>
+        </div>
+      </div>
+
+      <hr>
+    </div>
+
+    <div class="col-lg">
+      <div class="row">
+        <div class="col">
+          <p class="display-4" id="date"></p>
+          <p class="display-4" id="time"></p>
+        </div>
+        <div class="col" style="text-align:center;">
+          <canvas id="clock" width="200" height="200"></canvas>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-sm" style="text-align:center;">
+          {% if shares != 0 %}
+          <a class="btn btn-success" href="/sell?symbol={{symbol}}">Sell this stock</a>
+          {% else %}
+          <a class="btn btn-success disabled" href="#">Buy stock to sell shares</a>
+          {% endif %}
+        </div>
+        <div class="col-lg" style="text-align:center;">
+          {% if shares != 0 %}
+            <span style="color:#2980b9;">You own <b>{{shares}}</b> shares of this stock</span>
+          {% else %}
+            You do not own any shares of this stock
+          {% endif %}
+        </div>
+        <div class="col-sm" style="text-align:center;">
+          <a class="btn btn-primary" href="/buy?symbol={{symbol}}">Buy this stock</a>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-sm">
+          <b>Latest Update</b><br>
+          <span id="update-source-badge" class="badge badge-pill badge-secondary pointer">source</span>
+        </div>
+        <div id="latestUpdate" class="col-lg">
+
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col-sm">
+          <b>Opening price</b><br>
+          <span class ="cash-text detailed quote-attribute" id="open">$</span>
+        </div>
+        <div class="col-lg">
+          <b>Open Time</b><hr>
+          <span id="openTime"></span>
+        </div>
+        <div class="col-sm">
+          <b>Closing price</b><br>
+          <span class ="cash-text detailed quote-attribute" id="close">$</span>
+        </div>
+        <div class="col-lg">
+          <b>Close Time</b><hr>
+          <span id="closeTime"></span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Previous Day</b><hr>
+          <span id="previousDate"></span>
+        </div>
+        <div class="col">
+          <b>Previous Open</b><br>
+          <span class ="cash-text detailed previous-attribute" id="open">$</span>
+        </div>
+        <div class="col">
+          <b>Previous Close</b><br>
+          <span class ="cash-text detailed previous-attribute" id="close">$</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Low</b><br>
+          <span class ="cash-text detailed quote-attribute" id="low">$</span>
+        </div>
+        <div class="col">
+          <span id="price-source-badge" class="badge badge-pill badge-secondary pointer">source</span>
+          <b>Latest</b><br>
+          <span class ="cash-text detailed quote-attribute" id="latestPrice">$</span>
+        </div>
+        <div class="col">
+          <b>High</b><br>
+          <span class ="cash-text detailed quote-attribute" id="high">$</span>
+        </div>
+        <div class="col">
+          <b>Extended Price</b><br>
+          <span class ="cash-text detailed quote-attribute" id="extendedPrice">$</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>% Change</b><br>
+          <div id="changePercent-container">
+            <span class ="cash-text detailed quote-attribute" change="yes" id="changePercent">%</span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Change</b><br>
+          <div id="change-container">
+            <span class ="cash-text detailed quote-attribute"  change="yes" id="change">$</span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Extended % Change</b><br>
+          <div id="extendedChangePercent-container">
+            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChangePercent">%</span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Extended Change</b><br>
+          <div id="extendedChange-container">
+            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChange">$</span>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>52 Week High</b><br>
+          <span class ="cash-text detailed quote-attribute" id="week52High">$</span>
+        </div>
+        <div class="col">
+          <b>52 Week Low</b><br>
+          <span class ="cash-text detailed quote-attribute" id="week52Low">$</span>
+        </div>
+        <div class="col">
+          <div id="week52change-container">
+            <b>52 Week Change</b><br>
+            <span class ="cash-text detailed advanced-stats-attribute" id="week52change">%</span>
+          </div>
+        </div>
+        <div class="col">
+          <div id="ytdChange-container">
+            <b>Year-to-Day Change</b><br>
+            <span class ="cash-text detailed quote-attribute" change="yes" id="ytdChange">%</span>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Average 30-day volume</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="avg30Volume"></span>
+        </div>
+        <div class="col">
+          <b>Average 10-day volume</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="avg10Volume"></span>
+        </div>
+        <div class="col">
+          <b>Latest Volume</b><br>
+          <span class ="detailed quote-attribute" format="yes" id="latestVolume"></span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Shares Outstanding</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="sharesOutstanding"></span>
+        </div>
+        <div class="col">
+          <b>Floating Shares</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="float"></span>
+        </div>
+        <div class="col">
+          <b>Market Cap</b><br>
+          <span class ="detailed quote-attribute" format="yes" id="marketCap"></span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Total Cash</b><br>
+          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="totalCash">$</span>
+        </div>
+        <div class="col">
+          <b>Current Debt</b><br>
+          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="currentDebt">$</span>
+        </div>
+        <div class="col">
+          <b>Revenue</b><br>
+          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="revenue">$</span>
+        </div>
+        <div class="col">
+          <b>Gross Profit</b><br>
+          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="grossProfit">$</span>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col">
+          <b>Total Employees</b><br>
+          <span class ="detailed company-attribute" format="yes" id="employees"></span>
+        </div>
+        <div class="col">
+          <b>Total Revenue</b><br>
+          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="totalRevenue">$</span>
+        </div>
+        <div class="col">
+          <b>Revenues Per Share</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="revenuePerShare"></span>
+        </div>
+        <div class="col">
+          <b>Revenues Per Employee</b><br>
+          <span class ="detailed advanced-stats-attribute" format="yes" id="revenuePerEmployee"></span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Profit Margin</b><br>
+          <div id="profitMargin-container">
+            <span class ="detailed advanced-stats-attribute" round="yes" change="yes" id="profitMargin"></span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Debt To Equity</b><br>
+          <div id="debtToEquity-container">
+            <span class ="detailed advanced-stats-attribute" change="yes" id="debtToEquity"></span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Enterprise Value</b><br>
+          <span class ="cash-text detailed advanced-stats-attribute" format="yes" id="enterpriseValue">$</span>
+        </div>
+        <div class="col">
+          <b>Beta</b><br>
+          <span class ="detailed advanced-stats-attribute" round="yes" id="beta"></span>
+        </div>
+      </div>
+
+
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <b>Price-sales ratio</b><br>
+          <div id="priceToSales-container">
+            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="priceToSales"></span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Price-Book ratio</b><br>
+          <div id="priceToBook-container">
+            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="priceToBook"></span>
+          </div>
+        </div>
+        <div class="col">
+          <b>Forward price-to-earnings</b><br>
+          <div id="forwardPERatio-container">
+            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="forwardPERatio"></span>
+          </div>
+        </div>
+        <div class="col">
+          <b>PEG ratio</b><br>
+          <div id="pegRatio-container">
+            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="pegRatio"></span>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  var canvas = document.getElementById("clock");
+  var ctx = canvas.getContext("2d");
+  var radius = canvas.height / 2;
+  ctx.translate(radius, radius);
+  radius = radius * 0.90
+  setInterval(drawClock, 1000);
+
+  ctx.strokeStyle = "#333";
+  function drawClock() {
+    putDate();
+    startTime();
+    drawFace(ctx, radius);
+    drawNumbers(ctx, radius);
+    drawTime(ctx, radius);
+  }
+
+  function formatDigits(d){
+    if (d < 10) {
+      d = "0" + d;
+    }
+    return d;
+  }
+
+  function determineSup(date){
+    var lastDigit = date - (10 * parseInt(date / 10));
+    if (lastDigit == 1 && date != 11){return 'st';}
+    else if (lastDigit == 2 && date != 12){return 'nd';}
+    else if (lastDigit == 3 && date != 13){return 'rd';}
+    else{return 'th';}
+  }
+
+  function startTime(){
+    var today = new Date();
+    document.getElementById('time').innerHTML = getReadableTime(today);
+  }
+
+  function getReadableTime(time){
+    var hrs = time.getHours();
+    var prd = "";
+    if (hrs == 12) {
+      prd = "pm";
+    }
+    else if (hrs > 12) {
+      prd = "pm"
+      hrs = hrs - 12;
+    }
+    else if (hrs < 12) {
+      prd = "am";
+    }
+    return formatDigits(hrs)
+        +":"+
+        formatDigits(time.getMinutes())
+        +":<span id='seconds'>"+
+        formatDigits(time.getSeconds()) +"</span> "+ prd
+  }
+
+  function getReadableDate(date){
+    return days[date.getDay()] + "  "
+          + date.getDate()
+          + "<sup>"+determineSup(date.getDate())+"</sup> of "
+           +months[date.getMonth()] + ", "+ date.getFullYear();
+  }
+
+  function putDate(){
+    var today = new Date();
+    document.getElementById('date').innerHTML = getReadableDate(today);
+      ;
+  }
+
+  function drawFace(ctx, radius) {
+    var grad;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, 2*Math.PI);
+    ctx.fillStyle = '#ecf0f1';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(0, 0, radius*0.05, 0, 2*Math.PI);
+    ctx.fillStyle = '#333';
+    ctx.stroke();
+  }
+
+  function drawNumbers(ctx, radius) {
+    var ang;
+    var num;
+    ctx.font = radius*0.15 + "px IBM Plex Mono";
+    ctx.textBaseline="middle";
+    ctx.textAlign="center";
+    for(num = 1; num < 13; num++){
+      ang = num * Math.PI / 6;
+      ctx.rotate(ang);
+      ctx.translate(0, -radius*0.85);
+      ctx.rotate(-ang);
+      ctx.fillText(num.toString(), 0, 0);
+      ctx.rotate(ang);
+      ctx.translate(0, radius*0.85);
+      ctx.rotate(-ang);
+    }
+  }
+
+  function drawTime(ctx, radius){
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    hour = hour % 12;
+    hour = (hour*Math.PI/6) + (minute * Math.PI/(6*60))+ (second*Math.PI/(360*60));
+    drawHand(ctx, hour, radius*0.6, radius*0.03);
+    minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
+    drawHand(ctx, minute, radius*0.8, radius*0.03);
+    // secon
+    ctx.strokeStyle = "#e74c3c";
+    second = (second * Math.PI / 30);
+    drawHand(ctx, second, radius*0.9, radius*0.01);
+    ctx.strokeStyle = "#333";
+  }
+
+  function drawHand(ctx, pos, length, width) {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.moveTo(0,0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
+    ctx.rotate(-pos);
+  }
+</script>
+<script type="text/javascript">
+  function createDayGraph(canvas, timeString, chart){
+    var labels = [];
+    var high = [];
+    var low = [];
+    var open = [];
+    var close = [];
+    var prices = [];
+    var x = []
+    for (var i = 0; i < chart.length; i++){
+      labels[i] = chart[i].label;
+      high[i] = chart[i].high;
+      low[i] = chart[i].low;
+      open[i] = chart[i].open;
+      close[i] = chart[i].close;
+      prices[i] = (chart[i].high + chart[i].low)/2;
+      x[i] = i + 1;
+
+    }
+    Highcharts.chart(canvas,{
+      chart: {
+          zoomType: 'x'
+      },
+      subtitle: {
+          text: document.ontouchstart === undefined ?
+              'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+      },
+      xAxis: {categories: labels,
+              title: {
+                text: 'Dates'
+              }},
+      title: {text: 'Price History for '+timeString},
+      yAxis: {title: {
+                text: 'Prices ($)'
+      }},
+      series: [{
+          type: 'line',
+          name: 'Average',
+          data: prices,
+          marker: {enabled: false},
+          states: { hover: {lineWidth: 0}}
+      },{
+          type: 'line',
+          name: 'High',
+          data: high,
+          marker: {enabled: false},
+      },{
+          type: 'line',
+          name: 'Low',
+          data: low,
+          marker: {enabled: false},
+          states: { hover: {lineWidth: 0}}
+      },{
+          type: 'line',
+          name: 'Open',
+          data: open,
+          marker: {enabled: false},
+          states: { hover: {lineWidth: 0}}
+      },{
+          type: 'line',
+          name: 'Close',
+          data: close,
+          marker: {enabled: false},
+          states: { hover: {lineWidth: 0}}
+      }
+    ]
+    });
+  }
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats", function(response){
+      console.log(response);
+      var caretUp = document.createElement('img');
+      $(caretUp).css('width','16%');
+      $(caretUp).css('height','18%');
+      $(caretUp).attr('src','/static/caret-up.png');
+      $(caretUp).attr('alt','caret top');
+      var caretDown = document.createElement('img');
+      $(caretDown).css('width','16%');
+      $(caretDown).css('height','18%');
+      $(caretDown).attr('src','/static/caret-down.png');
+      $(caretDown).attr('alt','caret down');
+
+      var reqClasses = ['company','quote','previous','advanced-stats'];
+      reqClasses.forEach(function(item, index){
+        let elements = document.getElementsByClassName(item+'-attribute');
+        for (let element of elements){
+          let resp = response[item][element.id];
+          if(resp){
+            if ($(element).attr('change')){
+              var change = resp;
+              var color = "black";
+              if (change > 0.00){
+                var caret = $(caretUp).clone();
+                color = "#27ae60";
+              }
+              else if (change < 0.00){
+                var caret = $(caretDown).clone();
+                color = "red";
+              }
+              if(item == 'advanced-stats'){
+                console.log(element.id);
+                console.log($(element).attr('change'));
+                console.log('#'+element.id+'-container')
+              }
+              $('#'+element.id+'-container').append(caret.clone());
+            }
+            if (element.innerHTML == "$"){
+              $(element).css('color',color);
+              if($(element).attr('format')){
+                resp = getPrefix(resp);
+              }
+              else {
+                resp = formatNumber(resp);
+              }
+              element.innerHTML = "$" + resp;
+            }
+            else if (element.innerHTML == "%"){
+              $(element).css('color',color);
+              $(element).html(resp.toFixed(4) + '%');
+            }
+            else{
+              if($(element).attr('format')){
+                resp = addCommas(resp) + "<br>" + getPrefix(resp);
+              }
+              if($(element).attr('change')){
+                $(element).css('color',color);
+              }
+              if($(element).attr('round')){
+                resp = resp.toFixed(3);
+              }
+              element.innerHTML = resp;
+            }
+          }
+          else {
+            $(element).css('color','black');
+            element.innerHTML = "N/A";
+          }
+        }
+      });
+
+
+      $('#website').attr("href", response.company.website);
+      var s='';
+      response.company.tags.forEach(function(item, index){
+        s += "<a>" + item + "</a><br>";
+      });
+      $('#tags').html(s);
+
+      var d = new Date(response.quote.latestUpdate);
+      $('#latestUpdate').html(getReadableDate(d) + "<br>" + getReadableTime(d));
+
+      var d = new Date(response.quote.openTime);
+      $('#openTime').html(getReadableDate(d) + "<br>" + getReadableTime(d));
+
+      var d = new Date(response.quote.closeTime);
+      $('#closeTime').html(getReadableDate(d) + "<br>" + getReadableTime(d));
+
+      var d = new Date(response.previous.date);
+      $('#previousDate').html(getReadableDate(d));
+
+      tippy(document.getElementById('update-source-badge'),{
+        content: response.quote.latestSource,
+        animation: 'fade',
+        arrow: true,
+        arrowType: 'sharp',
+        delay: [500,5],
+        followCursor: false,
+      });
+
+      tippy(document.getElementById('price-source-badge'),{
+        content: response.quote.calculationPrice,
+        animation: 'fade',
+        arrow: true,
+        arrowType: 'sharp',
+        delay: [500,5],
+        followCursor: false,
+      });
+
+
+    });
+
+
+
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1d?{{t}}", function(chart){
+    //   var labels = [];
+    //   var high = [];
+    //   var low = [];
+    //   var average = [];
+    //   for (var i = 0; i < chart.length; i++){
+    //     labels[i] = chart[i].label;
+    //     high[i] = chart[i].high;
+    //     low[i] = chart[i].low;
+    //     average[i] = chart[i].average;
+    //
+    //   }
+    //   Highcharts.chart('priceHistory1d',{
+    //     chart: {
+    //         zoomType: 'x'
+    //     },
+    //     subtitle: {
+    //         text: document.ontouchstart === undefined ?
+    //             'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+    //     },
+    //     xAxis: {categories: labels,
+    //             title: {
+    //               text: 'Dates'
+    //             }},
+    //     title: {text: 'Price History for ' + chart[0].date},
+    //     yAxis: {title: {
+    //               text: 'Prices ($)'
+    //     }},
+    //     series: [{
+    //         type: 'line',
+    //         name: 'Average',
+    //         data: average,
+    //         marker: {enabled: false},
+    //         states: { hover: {lineWidth: 0}}
+    //     }
+    //   ]
+    //   });
+    //
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1m?{{t}}", function(chart){
+    //   createDayGraph('priceHistory1m','1 Month',chart);
+    //
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/3m?{{t}}", function(chart){
+    //   createDayGraph('priceHistory3m','3 months',chart)
+    //   var prices = [];
+    //   var x = [];
+    //   var labels = [];
+    //   var l = chart.length
+    //   for (var i = 0; i < l; i++){
+    //     prices[i] = (chart[i].high + chart[i].low)/2;
+    //     x[i] = i + 1;
+    //   }
+    //
+    // 	var y = prices
+    //
+    // 	var sum_xy = 0
+    // 	var sum_x = 0
+    // 	var sum_y = 0
+    // 	var sum_xsqr = 0
+    // 	var n = x.length
+    // 	for(var i = 0; i < n; i++){
+    // 		sum_xy += (x[i] * y[i])
+    // 		sum_x += x[i]
+    // 		sum_y += y[i]
+    // 		sum_xsqr += (x[i]*x[i])
+    // 	}
+    // 	m = ( (n * sum_xy) - ( sum_x * sum_y) ) / ( (n * sum_xsqr) - (sum_x * sum_x))
+    // 	c = ( (sum_y * sum_xsqr) - (sum_x * sum_xy)) / ( (n * sum_xsqr) - (sum_x * sum_x))
+    //
+    //   var rec = "";
+    //   if(m < 0 && {{shares}} > 0){
+    //     rec = "Consider selling a portion of your stocks.";
+    //   } else{
+    //     rec = "Consider buying stocks right now.";
+    //   }
+    //   $('#recommendation').html(rec);
+    //
+    // 	var y_pred = []
+    //
+    //   var date_array = chart[l-1].date.split('-');
+    //   var last_date = new Date();
+    //   last_date.setFullYear(parseInt(date_array[0]), parseInt(date_array[1]), parseInt(date_array[2]));
+    //   last_date.setDate(last_date.getDate() + 1);
+    //   day = 1;
+    //   for(var i = n; i < n + 365; i++){
+    //     x[i] = i + 1;
+    // 		y_pred[day-1] = (m * x[i]) + c
+    //     var i_date = new Date()
+    //     i_date.setDate(last_date.getDate() + day)
+    //     labels[day-1] =  months[i_date.getMonth()] + " " + i_date.getDate() + ", " + i_date.getFullYear();
+    //     day += 1
+    //   }
+    //
+    //   Highcharts.chart('regressionGraph', {
+    //     colorAxis: {
+    //       lineColor: '#e67e22',
+    //       gridLineColor:'#e67e22'
+    //     },
+    //     chart: {
+    //         zoomType: 'x'
+    //     },
+    //
+    //     tooltip: {
+    //         valueDecimals: 2
+    //     },
+    //
+    //     xAxis: {
+    //       categories:labels,
+    //     },yAxis: {title: {
+    //               text: 'Prices ($)'
+    //     }},
+    //
+    //     series: [{
+    //         data: y_pred,
+    //         lineColor:'#e67e22',
+    //         lineWidth: 3,
+    //         name: 'Average Daily Stock Price Predictions for the next year'
+    //     }]
+    //
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/6m?{{t}}", function(chart){
+    //   createDayGraph('priceHistory6m','6 months',chart)
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1y?{{t}}", function(chart){
+    //   createDayGraph('priceHistory1y','1 Year',chart)
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/2y?{{t}}", function(chart){
+    //   createDayGraph('priceHistory2y','2 Years',chart)
+    // });
+    //
+    // $.getJSON("{{b}}/stock/{{symbol}}/chart/5y?{{t}}", function(chart){
+    //   createDayGraph('priceHistory5y','5 Years',chart)
+    // });
+    // });
+  });
+</script>
+{% endblock %}

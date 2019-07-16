@@ -3,7 +3,7 @@
   <main class="container p-5">
     <label class="display-4">History</label>
     <hr>
-    <table class="table" id="table">
+    <table class="table table-responsive-sm" id="table">
         <thead>
             <tr>
                 <th scope="col">Transaction ID</th>
@@ -19,9 +19,9 @@
           {% for record in  history %}
             <tr>
               <td>{{ record.trans_id }}</td>
-              <td>{{ record.symbol }}</td>
+              <td class="trade-font">{{ record.symbol }}</td>
               <td>{{ record.shares }}</td>
-              <td>${{ record.price }}</td>
+              <td class="cash-text">${{ record.price }}</td>
               <td>{{ record.date }}</td>
               <td>{{ record.time }}</td>
               <td>{{ record.type }}</td>

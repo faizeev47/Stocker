@@ -1,6 +1,7 @@
 {% extends 'layout.twig' %}
 
 {% block body %}
+
 {% if alert != "" %}
   <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
     {{ alert }}
@@ -12,31 +13,31 @@
 
 <main class="container p-5">
 {% if quoted == TRUE %}
-  <label class="display-4">{{ symbol }}</label>
+  <label class="display-4 trade-font">{{ symbol }}</label>
   <hr>
   <label class="display-4">{{ company }}</label>
   <hr>
-  <label class="display-4">${{ price }}</label><br><span class="badge badge-pill badge-success">Live</span>
+  <label class="display-4 cash-text">${{ price }}</label><br><span class="badge badge-pill badge-success">Live</span>
   <hr>
-  <a class="btn btn-primary" href="/quote">Lookup more stocks</a>
-  <a class="btn btn-primary" href="/buy">Buy this stock</a>
-  <a class="btn btn-primary" href="/stockDetails/?symbol={{symbol}}">Get detailed stock <span class="badge badge-pill badge-success">Live</span></a>
-{% else %}
-  <form action="/quote" method="POST">
-    <h1 class="lead">Stock quote symbol:</h1>
+  <a class="btn btn-primary" href="/buy?symbol={{symbol}}">Buy this stock</a>
+  <a class="btn btn-primary" href="/detailedQuote?symbol={{symbol}}">Get detailed quote<span class="badge badge-pill badge-success">Live</span></a>
+  <hr>
+{% endif %}
+  <form action="/quote?symbol=" method="GET">
+
+    <h1 class="lead">{% if quoted == TRUE %}Lookup more stocks: {% else %} Stock quote symbol:{% endif %}</h1>
     <div class="form-group">
       <input class="form-control" type="text" name="symbol" placeholder="Symbol" required>
     </div>
     <button class="btn btn-primary" type="submit" id="submit-button">Lookup</button>
   </form>
-{% endif %}
 </main>
+
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
 $('.badge').each(function(index, element){
-  console.log(index);
   tippy(element,{
     content: 'Live content from IEX API',
     animation: 'fade',
