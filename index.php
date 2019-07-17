@@ -121,8 +121,7 @@
               DatabaseObject::addUser($username,$conf);
               array_push($alerts, array("message" => "Account created. Welcome to Stocker ".$username."! Enter credentials to login.", "type" => "success"));
               echo $twig->render('login.twig',['title' => 'Login',
-                                          'alerts' => $alerts,
-                                          'type' => $type]);
+                                          'alerts' => $alerts]);
               $alerts = array();
               $routing = FALSE;
               break;

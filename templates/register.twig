@@ -3,7 +3,7 @@
 {% block body %}
 <div class="jumbotron">
   <div class="display-1">
-    Finance
+    Stocker
   </div>
   <div class="display-4">
     Play with stocks
@@ -13,14 +13,14 @@
   </div>
 </div>
 
-{% if alert != "" %}
-<div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
-  {{ alert }}
+{% for alert in alerts %}
+<div class="alert alert-{{ alert.type }} alert-dismissible fade show" role="alert">
+  {{ alert.message }}
   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-{% endif %}
+{% endfor %}
 
 <main class="container p-5">
   <div class="display-4" style="font-size:50px">
