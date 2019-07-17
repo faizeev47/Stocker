@@ -43,6 +43,32 @@
       </div>
 
       <hr>
+      <div class="row">
+        <div class="col">
+          <b class="sub-heading display-4">News</b> <br>
+          <div class="container-fluid" id="news-container">
+            <div id="carouselCaptions" class="carousel slide" data-ride="carousel">
+              <ol id="carousel-indicators" class="carousel-indicators">
+
+              </ol>
+              <div id="carousel-inner" class="carousel-inner">
+
+              </div>
+              <a class="carousel-control-prev" href="#carouselCaptions" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href="#carouselCaptions" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
     </div>
 
     <div class="col-lg">
@@ -357,6 +383,7 @@
   setInterval(drawClock, 1000);
 
   ctx.strokeStyle = "#333";
+
   function drawClock() {
     putDate();
     startTime();
@@ -475,8 +502,23 @@
     ctx.stroke();
     ctx.rotate(-pos);
   }
-</script>
-<script type="text/javascript">
+
+  function setDateTime(response, elementID, reqClass, attribute, addTime){
+    let resp = response[reqClass][attribute];
+    if (resp) {
+      let date = new Date(resp);
+      let html = getReadableDate(date);
+      if (addTime) {
+        html += "<br>" + getReadableTime(date);
+      }
+      $('#'+elementID).html(html);
+    }
+    else {
+      $('#'+elementID).css('color', 'black');
+      $('#'+elementID).html("N/A");
+    }
+  }
+
   function createDayGraph(canvas, timeString, chart){
     var labels = [];
     var high = [];
@@ -544,11 +586,96 @@
     ]
     });
   }
+
+  function createListItem(slideIndex, isActive){
+    var li = document.createElement('li');
+    $(li).attr('data-target','#carouselCaptions');
+    $(li).attr('data-slide-to', slideIndex);
+    if (isActive){
+      $(li).addClass('active');
+    }
+    return li;
+  }
+
+  function createCarouselItem(headline, url, source, summary, date, image, isActive){
+    // make the headline
+    var hDiv = document.createElement('h6');
+    $(hDiv).html(headline);
+    // make the url
+    var uA = document.createElement('a');
+    $(uA).attr('href',url);
+    $(uA).html("Go to source");
+    // make the badge
+    var badge = document.createElement('badge');
+    $(badge).addClass('badge badge-pill badge-secondary pointer');
+    $(badge).html('source');
+    tippy(badge,{
+      content: source,
+      animation: 'fade',
+      arrow: true,
+      arrowType: 'sharp',
+      delay: [500,5],
+      followCursor: false,
+      interactive: true
+    });
+    // make the summary
+    var sH = document.createElement('badge');
+    $(sH).addClass('badge badge-pill badge-dark pointer');
+    $(sH).html('summary');
+    tippy(sH,{
+      content: summary,
+      animation: 'fade',
+      arrow: true,
+      arrowType: 'sharp',
+      delay: [500,5],
+      followCursor: false,
+      interactive: true
+    });
+    // make the date
+    var dH = document.createElement('p');
+    $(dH).html(getReadableDate(date) + " " + getReadableTime(date));
+
+    // create the media body
+    var mBody = document.createElement('div');
+    $(mBody).addClass('mediaBody');
+    $(mBody).append(hDiv);
+    $(mBody).append(document.createElement('hr'));
+    $(mBody).append(badge);
+    $(mBody).append(document.createElement('br'));
+    $(mBody).append(sH)
+    $(mBody).append(document.createElement('hr'));
+    $(mBody).append(dH);
+    $(mBody).append(uA);
+
+    // make the image
+    var img = document.createElement('img');
+    $(img).addClass('img-fluid align-self-center mr-3');
+    $(img).css('width','50%');
+    $(img).css('height','50%');
+    $(img).attr('src',image);
+    $(img).attr('alt',headline);
+
+    // make the media
+    var mDiv = document.createElement('div');
+    $(mDiv).addClass('media');
+    $(mDiv).append(img);
+    $(mDiv).append(mBody);
+
+    // make the carousel createCarouselItem
+    var cDiv = document.createElement('div');
+    $(cDiv).addClass('carousel-item');
+    if (isActive){
+      $(cDiv).addClass('active');
+    }
+    $(cDiv).append(mDiv);
+
+    return cDiv;
+  }
 </script>
 
 <script type="text/javascript">
 $(document).ready(function(){
-    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats", function(response){
+    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news", function(response){
       console.log(response);
       var caretUp = document.createElement('img');
       $(caretUp).css('width','16%');
@@ -577,11 +704,6 @@ $(document).ready(function(){
               else if (change < 0.00){
                 var caret = $(caretDown).clone();
                 color = "red";
-              }
-              if(item == 'advanced-stats'){
-                console.log(element.id);
-                console.log($(element).attr('change'));
-                console.log('#'+element.id+'-container')
               }
               $('#'+element.id+'-container').append(caret.clone());
             }
@@ -627,17 +749,10 @@ $(document).ready(function(){
       });
       $('#tags').html(s);
 
-      var d = new Date(response.quote.latestUpdate);
-      $('#latestUpdate').html(getReadableDate(d) + "<br>" + getReadableTime(d));
-
-      var d = new Date(response.quote.openTime);
-      $('#openTime').html(getReadableDate(d) + "<br>" + getReadableTime(d));
-
-      var d = new Date(response.quote.closeTime);
-      $('#closeTime').html(getReadableDate(d) + "<br>" + getReadableTime(d));
-
-      var d = new Date(response.previous.date);
-      $('#previousDate').html(getReadableDate(d));
+      setDateTime(response, 'latestUpdate', 'quote', 'latestUpdate', true);
+      setDateTime(response, 'openTime', 'quote', 'openTime', true);
+      setDateTime(response, 'closeTime', 'quote', 'closeTime', true);
+      setDateTime(response, 'previousDate', 'previous', 'date', false);
 
       tippy(document.getElementById('update-source-badge'),{
         content: response.quote.latestSource,
@@ -655,6 +770,15 @@ $(document).ready(function(){
         arrowType: 'sharp',
         delay: [500,5],
         followCursor: false,
+      });
+
+      let active = true;
+      let slideIdx = 0;
+      response.news.forEach(function(item, index){
+        $('#carousel-inner').append(createCarouselItem(item.headline,item.url,item.source,item.summary,new Date(item.datetime), item.image ,active));
+        $('#carousel-indicators').append(createListItem(slideIdx,active));
+        slideIdx = slideIdx + 1;
+        active = false;
       });
 
 

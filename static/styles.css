@@ -140,6 +140,12 @@ nav .navbar-brand:active, nav .navbar-brand:hover
   text-align: center;
 }
 
+#news-container
+{
+  background-color:#bdc3c7;
+  border: 2px solid #95a5a6;
+}
+
 #seconds
 {
   color: #e74c3c;
