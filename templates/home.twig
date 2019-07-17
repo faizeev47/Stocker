@@ -168,7 +168,6 @@
     var cardCols = document.createElement('div');
     $(cardCols).addClass(className+"-stocks card-columns");
     $(container).append(cardCols);
-    console.log(className);
     $('#' + className + "-section").append(label);
     $('#' + className + "-section").append(br);
     $('#' + className + "-section").append(badge);
@@ -187,11 +186,9 @@
     var traders = ['mostactive', 'gainers', 'losers','iexvolume','iexpercent'];
 
     $(traders).each(function(index,element){
-      console.log('traders: '+element);
       makeStockSection(headings[index], element);
       var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}";
       $.getJSON(url, function(list) {
-        console.log(list);
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
           var card = makeStockCard(list[i]['symbol'],
