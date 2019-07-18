@@ -428,13 +428,16 @@
   </div>
   <hr>
   <div class="display-4" style="text-align:center">
-    Regression On Prices
+    Trends for average stock prices
     <div class="container-fluid" id="regressionGraph"></div>
   </div>
 </main>
 {% else %}
 <main class="container-fluid p-5">
   <form action="/detailedQuote?symbol=" method="GET">
+    <div class="lead">
+      Try another symbol
+    </div>
     <input class="form-control" type="text" name="symbol" placeholder="Symbol" required>
     <button class="btn btn-primary" type="submit" id="submit-button">Lookup</button>
   </form>
@@ -814,16 +817,6 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news", function(response){
-      var caretUp = document.createElement('img');
-      $(caretUp).css('width','16%');
-      $(caretUp).css('height','18%');
-      $(caretUp).attr('src','/static/caret-up.png');
-      $(caretUp).attr('alt','caret top');
-      var caretDown = document.createElement('img');
-      $(caretDown).css('width','16%');
-      $(caretDown).css('height','18%');
-      $(caretDown).attr('src','/static/caret-down.png');
-      $(caretDown).attr('alt','caret down');
 
       var reqClasses = ['company','quote','previous','advanced-stats'];
       reqClasses.forEach(function(item, index){
@@ -999,27 +992,27 @@
         series: [{
             data: reg5y.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg5y.days + ' days'
+            name: 'trend for past ' + reg5y.days + ' days'
         },{
             data: reg2y.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg2y.days + ' days'
+            name: 'trend for past ' + reg2y.days + ' days'
         },{
             data: reg1y.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg1y.days + ' days'
+            name: 'trend for past ' + reg1y.days + ' days'
         },{
             data: reg6m.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg6m.days + ' days'
+            name: 'trend for past ' + reg6m.days + ' days'
         },{
             data: reg3m.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg3m.days + ' days'
+            name: 'trend for past ' + reg3m.days + ' days'
         },{
             data: reg1m.y,
             lineWidth: 2,
-            name: 'trend from past ' + reg1m.days + ' days'
+            name: 'trend for past ' + reg1m.days + ' days'
         },
       ]
       });

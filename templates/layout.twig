@@ -35,7 +35,7 @@
         if (num > 12){pow=12;prefix="T";}
         else if (num > 9){pow=9;prefix="B";}
         else if (num > 6){pow=6;prefix="M";}
-        else{return "";}
+        else{return addCommas(x);}
         let prefixed =  x / Math.pow(10,pow);
         prefixed = prefixed.toFixed(3).toString() + prefix;
         return prefixed;
@@ -64,6 +64,18 @@
         $('#withdraw-amount-input').val(amt);
         $('#withdraw-amount-input').attr('max',amt)
       });
+
+      var caretUp = document.createElement('img');
+      $(caretUp).css('width','16%');
+      $(caretUp).css('height','18%');
+      $(caretUp).attr('src','/static/caret-up.png');
+      $(caretUp).attr('alt','caret top');
+      var caretDown = document.createElement('img');
+      $(caretDown).css('width','16%');
+      $(caretDown).css('height','18%');
+      $(caretDown).attr('src','/static/caret-down.png');
+      $(caretDown).attr('alt','caret down');
+
       </script>
   </head>
 

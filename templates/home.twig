@@ -52,16 +52,20 @@
               <th scope="col">Name</th>
               <th scope="col">Shares</th>
               <th scope="col">Price <span class="badge badge-pill badge-success">Live</span></th>
+              <th scope="col">Change <span class="badge badge-pill badge-success">Live</span></th>
+              <th scope="col">Percent Change <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">TOTAL</th>
           </tr>
       </thead>
       <tbody>
         {% for stock in stocks %}
-        <tr class="stock-links pointer tippy" data-tippy-content="Go to {{stock.name}} stock">
+        <tr class="stock-links pointer tippy table-rows" data-tippy-content="Go to {{stock.name}} stock">
           <td id="symbol" class="trade-font">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
           <td class="cash-text">${{ stock.price }}</td>
+          <td class="cash-text change" value="{{stock.change}}"></td>
+          <td class="cash-text changePercent" value="{{stock.changePercent}}"></td>
           <td class="cash-text">${{ stock.total }}</td>
         </tr>
 
@@ -75,10 +79,14 @@
           <td></td>
           <td></td>
           <td></td>
+          <td></td>
+          <td></td>
           <td class="cash-text" style="font-size:18px;">${{ cash }}</td>
         </tr>
         <tr>
           <td style="font-size:18px;"><strong>Total</strong></td>
+          <td></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
@@ -90,15 +98,11 @@
     </table>
   </div>
 
-  <section id="mostative-section">
+  <section id="mostactive-section">
 
   </section>
 
   <section id="gainers-section">
-
-  </section>
-
-  <section id="losers-section">
 
   </section>
 
@@ -110,33 +114,40 @@
 
   </section>
 
+  <section id="losers-section">
+
+  </section>
+
 </main>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
-  function makeStockCard(symbol, companyName, price, changePercent, change){
+  function makeStockCard(symbol, companyName, price, changePercent, change, volume, cardSet){
     var cardTitle = document.createElement('h5');
     $(cardTitle).addClass('card-title');
     $(cardTitle).text(companyName);
+
     var cardText = document.createElement('p');
-    $(cardText).addClass('card-text');
-    var color = "white";
+    if(cardSet){
+      $(cardText).addClass('card-text');
+      var color = "white";
 
-    var img = "";
+      var img = "";
 
-    if (changePercent > 0.00){
-      img = "<img style=\"width:8%;height:10%;color:#2ecc71;\"src=\"/static/caret-up.png\" alt=\"caret top\">";
-      color = "#2ecc71";
+      if (changePercent > 0.00){
+        img = "<img style=\"width:8%;height:10%;color:#2ecc71;\"src=\"/static/caret-up.png\" alt=\"caret top\">";
+        color = "#2ecc71";
+      }
+      else if (changePercent < 0.00){
+        img = "<img style=\"width:8%;height:10%;color:red;\"src=\"/static/caret-down.png\" alt=\"caret top\">";
+        color = "red";
+      }
+      var text = "<span class='cash-text'>$" + formatNumber(price) +
+                  "</span><br><span style='color:" + color + ";font-weight:bold;'>"
+                  + img + changePercent.toFixed(2) + "%<br>"+ img + "$" + change +" </span><br>Vol: "+getPrefix(volume);
+      $(cardText).html(text);
     }
-    else if (changePercent < 0.00){
-      img = "<img style=\"width:8%;height:10%;color:red;\"src=\"/static/caret-down.png\" alt=\"caret top\">";
-      color = "red";
-    }
-    var text = "<span class='cash-text'>$" + formatNumber(price) +
-                "</span><br><span style='color:" + color + ";font-weight:bold;'>"
-                + img + changePercent.toFixed(2) + "%<br>"+ img + "$" + change +" </span>"
-    $(cardText).html(text);
     var cardBody = document.createElement('div');
     $(cardBody).addClass('card-body text-secondary');
     $(cardBody).append(cardTitle);
@@ -149,10 +160,16 @@
     $(card).addClass('card border-secondary');
     $(card).append(cardHeader);
     $(card).append(cardBody);
-    var link = document.createElement('a');
-    $(link).append(card);
-    $(link).attr('href',"detailedQuote?symbol=" + symbol);
-    return link;
+    if(cardSet){
+      var link = document.createElement('a');
+      $(link).append(card);
+      $(link).attr('href',"detailedQuote?symbol=" + symbol);
+      return link;
+    }
+    else {
+      return card;
+    }
+
   }
   function makeStockSection(heading, className){
     var label = document.createElement('label');
@@ -178,6 +195,28 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+    $('.change').each(function(index, element){
+      let c = parseFloat($(element).attr('value'));
+      if (c > 0) {
+        $(element).css('color',"#27ae60");
+      }
+      else {
+        $(element).css('color',"red");
+      }
+      $(element).html('$' + formatNumber(c));
+    });
+    $('.changePercent').each(function(index, element){
+      let c = parseFloat($(element).attr('value'));
+      if (c > 0) {
+        $(element).css('color',"#27ae60");
+      }
+      else {
+        $(element).css('color',"red");
+      }
+      $(element).html(c.toFixed(4)+"%");
+    });
+
+
     $('.stock-links').click(function(){
       window.location = "detailedQuote?symbol=" + $(this).find('#symbol').text();
     });
@@ -189,13 +228,18 @@
       makeStockSection(headings[index], element);
       var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}";
       $.getJSON(url, function(list) {
+        if(!list || list.length == 0){
+          let card = makeStockCard('N/A','No Stocks found in list', 0, 0, 0, 0, false);
+          $('.'+element+'-stocks').append(card);
+        }
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
           var card = makeStockCard(list[i]['symbol'],
                list[i].companyName,
                list[i].latestPrice,
                list[i].changePercent,
-               list[i].change);
+               list[i].change,
+               list[i].avgTotalVolume, true);
            tippy(card,{
              content: "Go to " + list[i].companyName + " stock",
              animation: 'fade',

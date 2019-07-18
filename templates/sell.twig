@@ -13,7 +13,7 @@
 
 <main class="container p-5">
   <form action="/sell{% if symbol != ''%}?symbol={{symbol}}{% endif %}" method="POST">
-    <h1 class="lead">Sell:</h1>
+    <h1 class="display-4">Sell</h1>
     <div class="form-group">
         <select class="custom-select form-control" name="symbol" required>
             {% if symbol == "" %}<option selected disabled value="">Choose stock</option>{% endif %}

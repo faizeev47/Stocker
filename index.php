@@ -38,7 +38,7 @@
       case 'login':
         // reroute towards homepage if user already logged in
         if (isset($_SESSION['sess_id'])) {
-          // append to existing alerts the following alert
+        // append to existing alerts the following alert
           array_push($alerts, array("message" => "User already logged in!", "type" => "info"));
           $route = 'home';
           break;
@@ -51,9 +51,8 @@
           if($auth_code > 0) {
             // add user id into the current session
             $_SESSION['sess_id'] = $auth_code;
-            array_push($alerts, array("message" => "User succesfully logged in!", "type" => "success"));
-            // reroute to homepage as user logs in
-            $route = 'home';
+            header("location:/home");
+            $routing = FALSE;
             break;
           }
           // user does not exist in the database: indicate so
@@ -79,28 +78,23 @@
       case 'logout':
         // reroute to login page if user is not logged in
         if (!isset($_SESSION['sess_id'])) {
-          array_push($alerts, array("message" => "No user currently logged in!", "type" => "info"));
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
         // if logged in, end the current browser session
         session_destroy();
-        array_push($alerts, array("message" => "User logged out!", "type" => "info"));
-        // render the login temlate
-        echo $twig->render('login.twig',['title' => 'Login',
-                                    'alerts' => $alerts,
-                                    'type' => $type]);
-        $alerts = array();
+        header("location:/login");
         $routing = FALSE;
         break;
 
       case 'register':
         // reroute to homepage if user is currently logged in
         if (isset($_SESSION['sess_id'])) {
+          array_push($alerts, array("message" => "User already logged in!", "type" => "info"));
           $route = 'home';
           break;
         }
-        $alert = "";
         // user submitted registration request via post
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           // extract submission arguments
@@ -120,6 +114,7 @@
               // user credentials qualify for an account
               DatabaseObject::addUser($username,$conf);
               array_push($alerts, array("message" => "Account created. Welcome to Stocker ".$username."! Enter credentials to login.", "type" => "success"));
+              // routing towards login will sign user in due to form submission
               echo $twig->render('login.twig',['title' => 'Login',
                                           'alerts' => $alerts]);
               $alerts = array();
@@ -137,6 +132,7 @@
       case 'home':
         // reroute to login if user user is not logged in
         if(!isset($_SESSION['sess_id'])) {
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -181,6 +177,8 @@
           array_push($stocks, array('symbol' => $row['symbol'],
                                     'name' => $quote->companyName,
                                     'shares' => $row['shares'],
+                                    'change' => $quote->change,
+                                    'changePercent' => $quote->changePercent,
                                     'price' =>  number_format((float)$quote->latestPrice, 2),
                                     'total' => number_format((float)$share_holding, 2)));
         }
@@ -197,6 +195,7 @@
       case 'buy':
         // reroute to login if user not logged in
         if(!isset($_SESSION['sess_id'])){
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -236,7 +235,7 @@
               $buy_price = (float) $quote->latestPrice * (int) $shares;
               // user does not have enough cash to buy stocks
               if ($buy_price > $user_data['cash']) {
-                $alert = "Not enough cash! Buy price for ".$shares." shares of ".$quote->companyName." stock is $".number_format((float)$buy_price, 2, '.', '').". You have $".number_format((float)$user_data['cash'], 2, '.', '');
+                $alert = "Not enough cash! Buy price for ".$shares." shares of ".$quote->companyName." stock is $".number_format((float)$buy_price, 2).". You have $".number_format((float)$user_data['cash'], 2, '.', '');
                 array_push($alerts, array("message" => $alert, "type" => "warning"));
               }
               else
@@ -251,10 +250,10 @@
                 // add record in transaction history
                 $do->addTransaction($symbol, (float)$quote->latestPrice, $shares, DatabaseObject::IS_BUY);
                 if($shares == 1){
-                  $alert = $shares." share of ".$quote->companyName." bought at $".(float)$quote->latestPrice."!";
+                  $alert = $shares." share of ".$quote->companyName." bought at $".number_format((float)$quote->latestPrice,2)."!";
                 }
                 else{
-                  $alert = $shares." shares of ".$quote->companyName." bought at $".(float)$quote->latestPrice." per share for a total of $".$buy_price."!";
+                  $alert = $shares." shares of ".$quote->companyName." bought at $".number_format((float)$quote->latestPrice,2)." per share for a total of $".$buy_price."!";
                 }
                 // alert user after success
                 array_push($alerts, array("message" => $alert, "type" => "success"));
@@ -268,11 +267,9 @@
                 if ($new_shares == 1){
                   $alert = " You now own 1 share of this stock.";
                 } else{
-                  $alert = " You now own ".$new_shares." shares of this stock.";
+                  $alert = " You now own ".$new_shares." shares of this stock at a total value of $".number_format((float) $quote->latestPrice * $new_shares, 2);
                 }
                 array_push($alerts, array("message" => $alert, "type" => "info"));
-                $route = 'home';
-                break;
               }
             }
           }
@@ -296,6 +293,7 @@
       case 'sell':
         // reroute to login is user not logged in
         if (!isset($_SESSION['sess_id'])){
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -357,23 +355,22 @@
                 // alert user after success
                 $do->addTransaction($symbol, (float)$quote->latestPrice, $shares,DatabaseObject::IS_SALE);
                 if ($shares == 1){
-                  $alert = $shares." share of ".$quote->companyName." sold at $".(float)$quote->latestPrice;
+                  $alert = $shares." share of ".$quote->companyName." sold at $".number_format((float)$quote->latestPrice,2);
                 } else {
-                  $alert = $shares." shares of ".$quote->companyName." sold at $".(float)$quote->latestPrice." per share for a total of $".$earning."!";
+                  $alert = $shares." shares of ".$quote->companyName." sold at $".number_format((float)$quote->latestPrice,2)." per share for a total of $".$earning."!";
                 }
                 array_push($alerts, array("message" => $alert, "type" => "success"));
                 // update user about current share holding
                 if ($rem_shares == 0){
                   $alert = " You now do not own any shares of this stock.";
                 } else if ($rem_shares == 1){
-                  $alert = " You now own 1 share of this stock.";
+                  $alert = " You now own 1 share of this stock ";
                 } else{
-                  $alert = " You now own ".$rem_shares." shares of this stock.";
+                  $alert = " You now own ".number_format($rem_shares)." shares of this stock ";
                 }
+                $alert .= "at a total value of $".number_format((float)$quote->latestPrice * $rem_shares,2);
 
                 array_push($alerts, array("message" => $alert, "type" => "info"));
-                $route = 'home';
-                break;
               }
             }
           }
@@ -400,6 +397,7 @@
       case 'history':
         // reroute to login if user not logged in
         if(!isset($_SESSION['sess_id'])) {
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -431,6 +429,7 @@
       case 'quote':
         // reroute to login if user not logged in
         if(!isset($_SESSION['sess_id'])){
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -501,6 +500,7 @@
       case 'detailedQuote':
         // reroute to login if user is not logged in
         if(!isset($_SESSION['sess_id'])){
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -563,6 +563,7 @@
       case 'deposit':
         // reroute to login if user not logged in
         if(!isset($_SESSION['sess_id'])){
+          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -603,10 +604,12 @@
             $do->updateCash(-$amount);
             $alert = "$".number_format((float)$amount, 2, '.', '')." withdrawn from your account! You now have $".number_format((float)$user_data['cash'], 2, '.', '');
             array_push($alerts, array("message" => $alert, "type" => "secondary"));
-            $route = 'home';
-            break;
+          }
+          else {
+            array_push($alerts, array("message" => "Amount exceeding current available balance!", "type" => "warning"));
           }
         }
+        $route = 'home';
         break;
 
       default:
