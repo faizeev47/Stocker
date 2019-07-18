@@ -1,8 +1,29 @@
 {% extends 'layout.twig' %}
+
 {% block body %}
+
+{% for alert in alerts%}
+<div class="alert alert-{{ alert.type }} alert-dismissible fade show" role="alert">
+  {{ alert.message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endfor %}
+
+{% if quoted %}
 <main class="container-fluid p-5" style="text-align:left;">
   <div class="row">
     <div class="col-lg">
+      <div class="row">
+        <div class="col">
+          <form action="/detailedQuote?symbol=" method="GET">
+            <input class="form-control" style="width:75%" type="text" name="symbol" placeholder="Symbol" required>
+            <button class="btn btn-primary" type="submit" id="submit-button">Lookup</button>
+          </form>
+        </div>
+      </div>
+      <hr>
       <h1 class="display-2 trade-font" style="text-align:center">{{symbol}}</h1>
       <hr>
       <img id="logo" class="img-fluid float-right" src="https://storage.googleapis.com/iex/api/logos/{{symbol}}.png">
@@ -11,9 +32,7 @@
       <hr style="margin-top:80px">
       <h1 class="sub-heading lead">Profile</h1>
       <p class="company-attribute" id="description"></p>
-
       <hr>
-
       <div class="row">
         <div class="col">
           <b class="sub-heading lead">CEO</b> <hr>
@@ -27,33 +46,25 @@
           <b class="sub-heading lead">Industry</b> <hr>
           <div class="company-attribute" id="industry"></div>
         </div>
-
         <div class="col">
           <b class="sub-heading lead">Exchange</b> <hr>
           <div class="company-attribute" id="exchange"></div>
         </div>
       </div>
-
       <hr>
-
       <div class="row">
         <div class="col">
           <div id="tags"></div>
         </div>
       </div>
-
       <hr>
       <div class="row">
         <div class="col">
           <b class="sub-heading display-4">News</b> <br>
           <div class="container-fluid" id="news-container">
             <div id="carouselCaptions" class="carousel slide" data-ride="carousel">
-              <ol id="carousel-indicators" class="carousel-indicators">
-
-              </ol>
-              <div id="carousel-inner" class="carousel-inner">
-
-              </div>
+              <ol id="carousel-indicators" class="carousel-indicators"></ol>
+              <div id="carousel-inner" class="carousel-inner"></div>
               <a class="carousel-control-prev" href="#carouselCaptions" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="sr-only">Previous</span>
@@ -66,11 +77,61 @@
           </div>
         </div>
       </div>
-
       <hr>
-
+      <div class="row">
+        <div class="col">
+          <b class="sub-heading display-4">Charts</b> <br>
+          <div class="container-fluid">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link" id="tab1" data-toggle="pill" href="#chart1" role="tab" aria-controls="chart1" aria-selected="true">1 Day</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" id="tab2" data-toggle="pill" href="#chart2" role="tab" aria-controls="chart2" aria-selected="false">1 Month</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab3" data-toggle="pill" href="#chart3" role="tab" aria-controls="chart3" aria-selected="false">3 Months</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab4" data-toggle="pill" href="#chart4" role="tab" aria-controls="chart4" aria-selected="false">6 Months</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab5" data-toggle="pill" href="#chart5" role="tab" aria-controls="chart5" aria-selected="false">1 Year</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab6" data-toggle="pill" href="#chart6" role="tab" aria-controls="chart6" aria-selected="false">2 Years</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab7" data-toggle="pill" href="#chart7" role="tab" aria-controls="chart7" aria-selected="false">5 Years</a>
+              </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade" id="chart1" role="tabpanel" aria-labelledby="tab1">
+                <div id="priceHistory1d" class="container"></div>
+              </div>
+              <div class="tab-pane fade show active" id="chart2" role="tabpanel" aria-labelledby="tab2">
+                <div id="priceHistory1m" class="container"></div>
+              </div>
+              <div class="tab-pane fade" id="chart3" role="tabpanel" aria-labelledby="tab3">
+                <div id="priceHistory3m" class="container"></div>
+              </div>
+              <div class="tab-pane fade" id="chart4" role="tabpanel" aria-labelledby="tab4">
+                <div id="priceHistory6m" class="container"></div>
+              </div>
+              <div class="tab-pane fade" id="chart5" role="tabpanel" aria-labelledby="tab5">
+                <div id="priceHistory1y" class="container"></div>
+              </div>
+              <div class="tab-pane fade" id="chart6" role="tabpanel" aria-labelledby="tab6">
+                <div id="priceHistory2y" class="container"></div>
+              </div>
+              <div class="tab-pane fade" id="chart7" role="tabpanel" aria-labelledby="tab7">
+                <div id="priceHistory5y" class="container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
     <div class="col-lg">
       <div class="row">
         <div class="col">
@@ -365,318 +426,394 @@
 
     </div>
   </div>
-
+  <hr>
+  <div class="display-4" style="text-align:center">
+    Regression On Prices
+    <div class="container-fluid" id="regressionGraph"></div>
+  </div>
 </main>
+{% else %}
+<main class="container-fluid p-5">
+  <form action="/detailedQuote?symbol=" method="GET">
+    <input class="form-control" type="text" name="symbol" placeholder="Symbol" required>
+    <button class="btn btn-primary" type="submit" id="submit-button">Lookup</button>
+  </form>
+</main>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}
-
+{% if quoted %}
 <script type="text/javascript">
-  var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-  var canvas = document.getElementById("clock");
-  var ctx = canvas.getContext("2d");
-  var radius = canvas.height / 2;
-  ctx.translate(radius, radius);
-  radius = radius * 0.90
-  setInterval(drawClock, 1000);
+    var canvas = document.getElementById("clock");
+    var ctx = canvas.getContext("2d");
+    var radius = canvas.height / 2;
+    ctx.translate(radius, radius);
+    radius = radius * 0.90
+    setInterval(drawClock, 1000);
 
-  ctx.strokeStyle = "#333";
-
-  function drawClock() {
-    putDate();
-    startTime();
-    drawFace(ctx, radius);
-    drawNumbers(ctx, radius);
-    drawTime(ctx, radius);
-  }
-
-  function formatDigits(d){
-    if (d < 10) {
-      d = "0" + d;
-    }
-    return d;
-  }
-
-  function determineSup(date){
-    var lastDigit = date - (10 * parseInt(date / 10));
-    if (lastDigit == 1 && date != 11){return 'st';}
-    else if (lastDigit == 2 && date != 12){return 'nd';}
-    else if (lastDigit == 3 && date != 13){return 'rd';}
-    else{return 'th';}
-  }
-
-  function startTime(){
-    var today = new Date();
-    document.getElementById('time').innerHTML = getReadableTime(today);
-  }
-
-  function getReadableTime(time){
-    var hrs = time.getHours();
-    var prd = "";
-    if (hrs == 12) {
-      prd = "pm";
-    }
-    else if (hrs > 12) {
-      prd = "pm"
-      hrs = hrs - 12;
-    }
-    else if (hrs < 12) {
-      prd = "am";
-    }
-    return formatDigits(hrs)
-        +":"+
-        formatDigits(time.getMinutes())
-        +":<span id='seconds'>"+
-        formatDigits(time.getSeconds()) +"</span> "+ prd
-  }
-
-  function getReadableDate(date){
-    return days[date.getDay()] + "  "
-          + date.getDate()
-          + "<sup>"+determineSup(date.getDate())+"</sup> of "
-           +months[date.getMonth()] + ", "+ date.getFullYear();
-  }
-
-  function putDate(){
-    var today = new Date();
-    document.getElementById('date').innerHTML = getReadableDate(today);
-      ;
-  }
-
-  function drawFace(ctx, radius) {
-    var grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, 2*Math.PI);
-    ctx.fillStyle = '#ecf0f1';
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(0, 0, radius*0.05, 0, 2*Math.PI);
-    ctx.fillStyle = '#333';
-    ctx.stroke();
-  }
-
-  function drawNumbers(ctx, radius) {
-    var ang;
-    var num;
-    ctx.font = radius*0.15 + "px IBM Plex Mono";
-    ctx.textBaseline="middle";
-    ctx.textAlign="center";
-    for(num = 1; num < 13; num++){
-      ang = num * Math.PI / 6;
-      ctx.rotate(ang);
-      ctx.translate(0, -radius*0.85);
-      ctx.rotate(-ang);
-      ctx.fillText(num.toString(), 0, 0);
-      ctx.rotate(ang);
-      ctx.translate(0, radius*0.85);
-      ctx.rotate(-ang);
-    }
-  }
-
-  function drawTime(ctx, radius){
-    var now = new Date();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var second = now.getSeconds();
-    hour = hour % 12;
-    hour = (hour*Math.PI/6) + (minute * Math.PI/(6*60))+ (second*Math.PI/(360*60));
-    drawHand(ctx, hour, radius*0.6, radius*0.03);
-    minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
-    drawHand(ctx, minute, radius*0.8, radius*0.03);
-    // secon
-    ctx.strokeStyle = "#e74c3c";
-    second = (second * Math.PI / 30);
-    drawHand(ctx, second, radius*0.9, radius*0.01);
     ctx.strokeStyle = "#333";
-  }
 
-  function drawHand(ctx, pos, length, width) {
-    ctx.beginPath();
-    ctx.lineWidth = width;
-    ctx.lineCap = "round";
-    ctx.moveTo(0,0);
-    ctx.rotate(pos);
-    ctx.lineTo(0, -length);
-    ctx.stroke();
-    ctx.rotate(-pos);
-  }
+    function drawClock() {
+      putDate();
+      startTime();
+      drawFace(ctx, radius);
+      drawNumbers(ctx, radius);
+      drawTime(ctx, radius);
+    }
 
-  function setDateTime(response, elementID, reqClass, attribute, addTime){
-    let resp = response[reqClass][attribute];
-    if (resp) {
-      let date = new Date(resp);
-      let html = getReadableDate(date);
-      if (addTime) {
-        html += "<br>" + getReadableTime(date);
+    function formatDigits(d){
+      if (d < 10) {
+        d = "0" + d;
       }
-      $('#'+elementID).html(html);
+      return d;
     }
-    else {
-      $('#'+elementID).css('color', 'black');
-      $('#'+elementID).html("N/A");
-    }
-  }
 
-  function createDayGraph(canvas, timeString, chart){
-    var labels = [];
-    var high = [];
-    var low = [];
-    var open = [];
-    var close = [];
-    var prices = [];
-    var x = []
-    for (var i = 0; i < chart.length; i++){
-      labels[i] = chart[i].label;
-      high[i] = chart[i].high;
-      low[i] = chart[i].low;
-      open[i] = chart[i].open;
-      close[i] = chart[i].close;
-      prices[i] = (chart[i].high + chart[i].low)/2;
-      x[i] = i + 1;
-
+    function determineSup(date){
+      var lastDigit = date - (10 * parseInt(date / 10));
+      if (lastDigit == 1 && date != 11){return 'st';}
+      else if (lastDigit == 2 && date != 12){return 'nd';}
+      else if (lastDigit == 3 && date != 13){return 'rd';}
+      else{return 'th';}
     }
-    Highcharts.chart(canvas,{
-      chart: {
-          zoomType: 'x'
-      },
-      subtitle: {
-          text: document.ontouchstart === undefined ?
-              'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-      },
-      xAxis: {categories: labels,
-              title: {
-                text: 'Dates'
-              }},
-      title: {text: 'Price History for '+timeString},
-      yAxis: {title: {
-                text: 'Prices ($)'
-      }},
-      series: [{
-          type: 'line',
-          name: 'Average',
-          data: prices,
-          marker: {enabled: false},
-          states: { hover: {lineWidth: 0}}
-      },{
-          type: 'line',
-          name: 'High',
-          data: high,
-          marker: {enabled: false},
-      },{
-          type: 'line',
-          name: 'Low',
-          data: low,
-          marker: {enabled: false},
-          states: { hover: {lineWidth: 0}}
-      },{
-          type: 'line',
-          name: 'Open',
-          data: open,
-          marker: {enabled: false},
-          states: { hover: {lineWidth: 0}}
-      },{
-          type: 'line',
-          name: 'Close',
-          data: close,
-          marker: {enabled: false},
-          states: { hover: {lineWidth: 0}}
+
+    function startTime(){
+      var today = new Date();
+      document.getElementById('time').innerHTML = getReadableTime(today);
+    }
+
+    function getReadableTime(time){
+      var hrs = time.getHours();
+      var prd = "";
+      if (hrs == 12) {
+        prd = "pm";
       }
-    ]
-    });
-  }
-
-  function createListItem(slideIndex, isActive){
-    var li = document.createElement('li');
-    $(li).attr('data-target','#carouselCaptions');
-    $(li).attr('data-slide-to', slideIndex);
-    if (isActive){
-      $(li).addClass('active');
+      else if (hrs > 12) {
+        prd = "pm"
+        hrs = hrs - 12;
+      }
+      else if (hrs < 12) {
+        prd = "am";
+      }
+      return formatDigits(hrs)
+          +":"+
+          formatDigits(time.getMinutes())
+          +":<span id='seconds'>"+
+          formatDigits(time.getSeconds()) +"</span> "+ prd
     }
-    return li;
-  }
 
-  function createCarouselItem(headline, url, source, summary, date, image, isActive){
-    // make the headline
-    var hDiv = document.createElement('h6');
-    $(hDiv).html(headline);
-    // make the url
-    var uA = document.createElement('a');
-    $(uA).attr('href',url);
-    $(uA).html("Go to source");
-    // make the badge
-    var badge = document.createElement('badge');
-    $(badge).addClass('badge badge-pill badge-secondary pointer');
-    $(badge).html('source');
-    tippy(badge,{
-      content: source,
-      animation: 'fade',
-      arrow: true,
-      arrowType: 'sharp',
-      delay: [500,5],
-      followCursor: false,
-      interactive: true
-    });
-    // make the summary
-    var sH = document.createElement('badge');
-    $(sH).addClass('badge badge-pill badge-dark pointer');
-    $(sH).html('summary');
-    tippy(sH,{
-      content: summary,
-      animation: 'fade',
-      arrow: true,
-      arrowType: 'sharp',
-      delay: [500,5],
-      followCursor: false,
-      interactive: true
-    });
-    // make the date
-    var dH = document.createElement('p');
-    $(dH).html(getReadableDate(date) + " " + getReadableTime(date));
-
-    // create the media body
-    var mBody = document.createElement('div');
-    $(mBody).addClass('mediaBody');
-    $(mBody).append(hDiv);
-    $(mBody).append(document.createElement('hr'));
-    $(mBody).append(badge);
-    $(mBody).append(document.createElement('br'));
-    $(mBody).append(sH)
-    $(mBody).append(document.createElement('hr'));
-    $(mBody).append(dH);
-    $(mBody).append(uA);
-
-    // make the image
-    var img = document.createElement('img');
-    $(img).addClass('img-fluid align-self-center mr-3');
-    $(img).css('width','50%');
-    $(img).css('height','50%');
-    $(img).attr('src',image);
-    $(img).attr('alt',headline);
-
-    // make the media
-    var mDiv = document.createElement('div');
-    $(mDiv).addClass('media');
-    $(mDiv).append(img);
-    $(mDiv).append(mBody);
-
-    // make the carousel createCarouselItem
-    var cDiv = document.createElement('div');
-    $(cDiv).addClass('carousel-item');
-    if (isActive){
-      $(cDiv).addClass('active');
+    function getReadableDate(date){
+      return days[date.getDay()] + "  "
+            + date.getDate()
+            + "<sup>"+determineSup(date.getDate())+"</sup> of "
+             +months[date.getMonth()] + ", "+ date.getFullYear();
     }
-    $(cDiv).append(mDiv);
 
-    return cDiv;
-  }
+    function putDate(){
+      var today = new Date();
+      document.getElementById('date').innerHTML = getReadableDate(today);
+        ;
+    }
+
+    function drawFace(ctx, radius) {
+      var grad;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, 2*Math.PI);
+      ctx.fillStyle = '#ecf0f1';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(0, 0, radius*0.05, 0, 2*Math.PI);
+      ctx.fillStyle = '#333';
+      ctx.stroke();
+    }
+
+    function drawNumbers(ctx, radius) {
+      var ang;
+      var num;
+      ctx.font = radius*0.15 + "px IBM Plex Mono";
+      ctx.textBaseline="middle";
+      ctx.textAlign="center";
+      for(num = 1; num < 13; num++){
+        ang = num * Math.PI / 6;
+        ctx.rotate(ang);
+        ctx.translate(0, -radius*0.85);
+        ctx.rotate(-ang);
+        ctx.fillText(num.toString(), 0, 0);
+        ctx.rotate(ang);
+        ctx.translate(0, radius*0.85);
+        ctx.rotate(-ang);
+      }
+    }
+
+    function drawTime(ctx, radius){
+      var now = new Date();
+      var hour = now.getHours();
+      var minute = now.getMinutes();
+      var second = now.getSeconds();
+      hour = hour % 12;
+      hour = (hour*Math.PI/6) + (minute * Math.PI/(6*60))+ (second*Math.PI/(360*60));
+      drawHand(ctx, hour, radius*0.6, radius*0.03);
+      minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
+      drawHand(ctx, minute, radius*0.8, radius*0.03);
+      // secon
+      ctx.strokeStyle = "#e74c3c";
+      second = (second * Math.PI / 30);
+      drawHand(ctx, second, radius*0.9, radius*0.01);
+      ctx.strokeStyle = "#333";
+    }
+
+    function drawHand(ctx, pos, length, width) {
+      ctx.beginPath();
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.moveTo(0,0);
+      ctx.rotate(pos);
+      ctx.lineTo(0, -length);
+      ctx.stroke();
+      ctx.rotate(-pos);
+    }
+
+    function setDateTime(response, elementID, reqClass, attribute, addTime){
+      let resp = response[reqClass][attribute];
+      if (resp) {
+        let date = new Date(resp);
+        let html = getReadableDate(date);
+        if (addTime) {
+          html += "<br>" + getReadableTime(date);
+        }
+        $('#'+elementID).html(html);
+      }
+      else {
+        $('#'+elementID).css('color', 'black');
+        $('#'+elementID).html("N/A");
+      }
+    }
+
+    function getArrays(chart){
+      let labels = [];
+      let high = [];
+      let low = [];
+      let open = [];
+      let close = [];
+      let prices = [];
+      let l = chart.length;
+      for (let i = 0; i < l; i++){
+        labels[i] = chart[i].label;
+        high[i] = chart[i].high;
+        low[i] = chart[i].low;
+        open[i] = chart[i].open;
+        close[i] = chart[i].close;
+        prices[i] = (chart[i].high + chart[i].low)/2;
+      }
+      return {"labels":labels, "high":high, "low":low, "open":open, "close":close, "prices":prices};
+    }
+
+    function next100Days(dateString){
+      var dates = [];
+      let date_array = dateString.split('-');
+      let startDate = new Date();
+      startDate.setFullYear(parseInt(date_array[0]), parseInt(date_array[1]), parseInt(date_array[2]));
+      startDate.setDate(startDate.getDate() + 1);
+      for(var i = 1; i <= 365; i++){
+        let ith_date = new Date();
+        ith_date.setDate(startDate.getDate() + i);
+        dates[i] =  months[ith_date.getMonth()] + " " + ith_date.getDate() + ", " + ith_date.getFullYear();
+      }
+      return dates;
+    }
+
+    function regressionAnalysis(arrays, days){
+      let l = arrays.labels.length;
+      let y = arrays.prices.slice(l-parseInt(days), l);
+      let x = [];
+      for (let i = 0; i < parseInt(days) ; i++){
+        x[i] = i + 1;
+      }
+
+      let sum_xy = 0;
+      let sum_x = 0;
+      let sum_y = 0;
+      let sum_xsqr = 0;
+      let n = x.length;
+      for(let i = 0; i < n; i++){
+        sum_xy += (x[i] * y[i]);
+        sum_x += x[i];
+        sum_y += y[i];
+        sum_xsqr += (x[i]*x[i]);
+      }
+      let m = ( (n * sum_xy) - ( sum_x * sum_y) ) / ( (n * sum_xsqr) - (sum_x * sum_x));
+      let c = ( (sum_y * sum_xsqr) - (sum_x * sum_xy)) / ( (n * sum_xsqr) - (sum_x * sum_x));
+
+      let y_pred = []
+      for(let i = n,  day = 1; i < n + 365; i++, day++){
+        x[i] = i + 1;
+        y_pred[day-1] = (m * x[i]) + c;
+      }
+      return {'y':y_pred, 'days':parseInt(days)};
+    }
+
+    function min(v1, v2){
+      if (v1 < v2){return v1;}
+      else{return v2;}
+    }
+
+    function createDayGraph(canvas, timeString, arrays, days){
+      days = parseInt(days);
+      let totalDays =  arrays.labels.length;
+      Highcharts.chart(canvas,{
+        chart: {
+            zoomType: 'x'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        tooltip: {
+          valueDecimals: 2,
+          valuePrefix: '$'
+        },
+        xAxis: {categories: arrays.labels.slice(totalDays - days + 1, totalDays),
+                title: {
+                  text: 'Dates'
+                }},
+        title: {text: 'Price History for '+timeString},
+        yAxis: {title: {
+                  text: 'Prices ($)'
+        }},
+        series: [{
+            type: 'line',
+            name: 'Average',
+            data: arrays.prices.slice(totalDays - days + 1, totalDays),
+            marker: {enabled: false},
+            states: { hover: {lineWidth: 0}}
+        },{
+            type: 'line',
+            name: 'High',
+            data: arrays.high.slice(totalDays - days + 1, totalDays),
+            marker: {enabled: false},
+        },{
+            type: 'line',
+            name: 'Low',
+            data: arrays.low.slice(totalDays - days + 1, totalDays),
+            marker: {enabled: false},
+            states: { hover: {lineWidth: 0}}
+        },{
+            type: 'line',
+            name: 'Open',
+            data: arrays.open.slice(totalDays - days + 1, totalDays),
+            marker: {enabled: false},
+            states: { hover: {lineWidth: 0}}
+        },{
+            type: 'line',
+            name: 'Close',
+            data: arrays.close.slice(totalDays - days + 1, totalDays),
+            marker: {enabled: false},
+            states: { hover: {lineWidth: 0}}
+        }
+      ]
+      });
+    }
+
+
+
+    function createListItem(slideIndex, isActive){
+      var li = document.createElement('li');
+      $(li).attr('data-target','#carouselCaptions');
+      $(li).attr('data-slide-to', slideIndex);
+      if (isActive){
+        $(li).addClass('active');
+      }
+      return li;
+    }
+
+    function createCarouselItem(headline, url, source, summary, date, image, isActive){
+      // make the headline
+      var hDiv = document.createElement('h6');
+      $(hDiv).html(headline);
+      // make the badge
+      if (source != ""){
+        var badge = document.createElement('span');
+        $(badge).addClass('badge badge-pill badge-secondary pointer');
+        $(badge).html('source');
+        tippy(badge,{
+          content: source + ": <a href='"+url+"'>Go</a>",
+          animation: 'fade',
+          arrow: true,
+          arrowType: 'sharp',
+          delay: [500,5],
+          followCursor: false,
+          interactive: true
+        });
+      }
+
+      // make the summary
+      if (summary != ""){
+        var sH = document.createElement('span');
+        $(sH).addClass('badge badge-pill badge-dark pointer');
+        $(sH).html('summary');
+        tippy(sH,{
+          content: summary,
+          animation: 'fade',
+          arrow: true,
+          arrowType: 'sharp',
+          delay: [500,5],
+          followCursor: false,
+          interactive: true
+        });
+      }
+
+      // make the date
+      var dH = document.createElement('p');
+      $(dH).css('padding','50px');
+      $(dH).html(getReadableDate(date) + " " + getReadableTime(date));
+
+      // create the media body
+      var mBody = document.createElement('div');
+      $(mBody).addClass('mediaBody');
+      $(mBody).append(hDiv);
+      $(mBody).append(document.createElement('hr'));
+      if(source != ""){
+        $(mBody).append(badge);
+      }
+      $(mBody).append(document.createElement('br'));
+      if(summary)
+      $(mBody).append(sH)
+      $(mBody).append(document.createElement('hr'));
+      $(mBody).append(dH);
+
+      // make the image
+      var img = document.createElement('img');
+      $(img).addClass('img-fluid align-self-center mr-3');
+      $(img).css('width','50%');
+      $(img).css('height','50%');
+      $(img).attr('src','/static/favicon.png');
+      $(img).attr('alt',headline);
+
+      // make the media
+      var mDiv = document.createElement('div');
+      $(mDiv).addClass('media');
+      $(mDiv).append(img);
+      $(mDiv).append(mBody);
+
+      // make the carousel createCarouselItem
+      var cDiv = document.createElement('div');
+      $(cDiv).addClass('carousel-item');
+      if (isActive){
+        $(cDiv).addClass('active');
+      }
+      $(cDiv).append(mDiv);
+
+      return cDiv;
+    }
 </script>
 
 <script type="text/javascript">
-$(document).ready(function(){
+  $(document).ready(function(){
     $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news", function(response){
-      console.log(response);
       var caretUp = document.createElement('img');
       $(caretUp).css('width','16%');
       $(caretUp).css('height','18%');
@@ -741,7 +878,6 @@ $(document).ready(function(){
         }
       });
 
-
       $('#website').attr("href", response.company.website);
       var s='';
       response.company.tags.forEach(function(item, index){
@@ -762,7 +898,6 @@ $(document).ready(function(){
         delay: [500,5],
         followCursor: false,
       });
-
       tippy(document.getElementById('price-source-badge'),{
         content: response.quote.calculationPrice,
         animation: 'fade',
@@ -780,152 +915,121 @@ $(document).ready(function(){
         slideIdx = slideIdx + 1;
         active = false;
       });
+      if (active){
+        $('#carousel-inner').append(createCarouselItem("No news for {{stock}} stock","#","","",new Date(),"",active));
+        $('#carousel-indicators').append(createListItem(slideIdx,active));
+      }
+    });
 
+    $.getJSON("{{ b }}/stock/{{symbol}}/chart/1d?{{t}}", function(chart){
+      var labels = [];
+      var average = [];
+      for (var i = 0; i < chart.length; i++){
+        labels[i] = chart[i].label;
+        average[i] = chart[i].average;
 
+      }
+      Highcharts.chart('priceHistory1d',{
+        chart: {
+            zoomType: 'x'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+                'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {categories: labels,
+                title: {
+                  text: 'Dates'
+                }},
+        title: {text: 'Price History for ' + chart[0].date},
+        yAxis: {title: {
+                  text: 'Prices ($)'
+        }},
+        series: [{
+            type: 'line',
+            name: 'Average',
+            data: average,
+            marker: {enabled: false},
+            states: { hover: {lineWidth: 0}}
+        }
+      ]
+      });
+
+    });
+
+    $.getJSON("{{b}}/stock/{{symbol}}/chart/5y?{{t}}", function(chart){
+      var arrays = getArrays(chart);
+      createDayGraph('priceHistory1m','1 Month', arrays, min(31, chart.length/(12*5)+20));
+      createDayGraph('priceHistory3m','3 months', arrays, min(91, chart.length/20 + 20))
+      createDayGraph('priceHistory6m','6 months', arrays, min(182, chart.length/10 + 20));
+      createDayGraph('priceHistory1y','1 Year', arrays, min(365, chart.length/5 + 20));
+      createDayGraph('priceHistory2y','2 Years', arrays, min(365*2, chart.length/2 + 20));
+      createDayGraph('priceHistory5y','5 Years', arrays, min(365*5, chart.length));
+      var dates = next100Days(chart[arrays.labels.length - 1].date);
+      var reg1m = regressionAnalysis(arrays, min(31, chart.length/(12*5)+20));
+      var reg3m = regressionAnalysis(arrays, min(91, chart.length/20 + 20));
+      var reg6m = regressionAnalysis(arrays, min(182, chart.length/10 + 20));
+      var reg1y = regressionAnalysis(arrays,min(365, chart.length/5 + 20));
+      var reg2y = regressionAnalysis(arrays, min(365*2, chart.length/2 + 20));
+      var reg5y = regressionAnalysis(arrays, min(365*5, chart.length));
+      Highcharts.chart('regressionGraph', {
+        colorAxis: {
+          lineColor: '#e67e22',
+          gridLineColor:'#e67e22'
+        },
+        title: {text: 'Prices forecast'},
+        subtitle: {text: 'Regression on different time periods'},
+        chart: {
+            zoomType: 'x'
+        },
+
+        tooltip: {
+            valuePrefix: '$',
+            valueDecimals: 2
+        },
+        xAxis: {
+          categories: dates
+        },
+        yAxis: {
+          title: {
+            text: 'Prices ($)'
+          }
+        },
+
+        series: [{
+            data: reg5y.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg5y.days + ' days'
+        },{
+            data: reg2y.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg2y.days + ' days'
+        },{
+            data: reg1y.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg1y.days + ' days'
+        },{
+            data: reg6m.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg6m.days + ' days'
+        },{
+            data: reg3m.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg3m.days + ' days'
+        },{
+            data: reg1m.y,
+            lineWidth: 2,
+            name: 'trend from past ' + reg1m.days + ' days'
+        },
+      ]
+      });
     });
 
 
 
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1d?{{t}}", function(chart){
-    //   var labels = [];
-    //   var high = [];
-    //   var low = [];
-    //   var average = [];
-    //   for (var i = 0; i < chart.length; i++){
-    //     labels[i] = chart[i].label;
-    //     high[i] = chart[i].high;
-    //     low[i] = chart[i].low;
-    //     average[i] = chart[i].average;
-    //
-    //   }
-    //   Highcharts.chart('priceHistory1d',{
-    //     chart: {
-    //         zoomType: 'x'
-    //     },
-    //     subtitle: {
-    //         text: document.ontouchstart === undefined ?
-    //             'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
-    //     },
-    //     xAxis: {categories: labels,
-    //             title: {
-    //               text: 'Dates'
-    //             }},
-    //     title: {text: 'Price History for ' + chart[0].date},
-    //     yAxis: {title: {
-    //               text: 'Prices ($)'
-    //     }},
-    //     series: [{
-    //         type: 'line',
-    //         name: 'Average',
-    //         data: average,
-    //         marker: {enabled: false},
-    //         states: { hover: {lineWidth: 0}}
-    //     }
-    //   ]
-    //   });
-    //
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1m?{{t}}", function(chart){
-    //   createDayGraph('priceHistory1m','1 Month',chart);
-    //
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/3m?{{t}}", function(chart){
-    //   createDayGraph('priceHistory3m','3 months',chart)
-    //   var prices = [];
-    //   var x = [];
-    //   var labels = [];
-    //   var l = chart.length
-    //   for (var i = 0; i < l; i++){
-    //     prices[i] = (chart[i].high + chart[i].low)/2;
-    //     x[i] = i + 1;
-    //   }
-    //
-    // 	var y = prices
-    //
-    // 	var sum_xy = 0
-    // 	var sum_x = 0
-    // 	var sum_y = 0
-    // 	var sum_xsqr = 0
-    // 	var n = x.length
-    // 	for(var i = 0; i < n; i++){
-    // 		sum_xy += (x[i] * y[i])
-    // 		sum_x += x[i]
-    // 		sum_y += y[i]
-    // 		sum_xsqr += (x[i]*x[i])
-    // 	}
-    // 	m = ( (n * sum_xy) - ( sum_x * sum_y) ) / ( (n * sum_xsqr) - (sum_x * sum_x))
-    // 	c = ( (sum_y * sum_xsqr) - (sum_x * sum_xy)) / ( (n * sum_xsqr) - (sum_x * sum_x))
-    //
-    //   var rec = "";
-    //   if(m < 0 && {{shares}} > 0){
-    //     rec = "Consider selling a portion of your stocks.";
-    //   } else{
-    //     rec = "Consider buying stocks right now.";
-    //   }
-    //   $('#recommendation').html(rec);
-    //
-    // 	var y_pred = []
-    //
-    //   var date_array = chart[l-1].date.split('-');
-    //   var last_date = new Date();
-    //   last_date.setFullYear(parseInt(date_array[0]), parseInt(date_array[1]), parseInt(date_array[2]));
-    //   last_date.setDate(last_date.getDate() + 1);
-    //   day = 1;
-    //   for(var i = n; i < n + 365; i++){
-    //     x[i] = i + 1;
-    // 		y_pred[day-1] = (m * x[i]) + c
-    //     var i_date = new Date()
-    //     i_date.setDate(last_date.getDate() + day)
-    //     labels[day-1] =  months[i_date.getMonth()] + " " + i_date.getDate() + ", " + i_date.getFullYear();
-    //     day += 1
-    //   }
-    //
-    //   Highcharts.chart('regressionGraph', {
-    //     colorAxis: {
-    //       lineColor: '#e67e22',
-    //       gridLineColor:'#e67e22'
-    //     },
-    //     chart: {
-    //         zoomType: 'x'
-    //     },
-    //
-    //     tooltip: {
-    //         valueDecimals: 2
-    //     },
-    //
-    //     xAxis: {
-    //       categories:labels,
-    //     },yAxis: {title: {
-    //               text: 'Prices ($)'
-    //     }},
-    //
-    //     series: [{
-    //         data: y_pred,
-    //         lineColor:'#e67e22',
-    //         lineWidth: 3,
-    //         name: 'Average Daily Stock Price Predictions for the next year'
-    //     }]
-    //
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/6m?{{t}}", function(chart){
-    //   createDayGraph('priceHistory6m','6 months',chart)
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/1y?{{t}}", function(chart){
-    //   createDayGraph('priceHistory1y','1 Year',chart)
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/2y?{{t}}", function(chart){
-    //   createDayGraph('priceHistory2y','2 Years',chart)
-    // });
-    //
-    // $.getJSON("{{b}}/stock/{{symbol}}/chart/5y?{{t}}", function(chart){
-    //   createDayGraph('priceHistory5y','5 Years',chart)
-    // });
-    // });
-  });
+
+});
 </script>
+
+{% endif %}
 {% endblock %}

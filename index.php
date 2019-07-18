@@ -241,6 +241,8 @@
               }
               else
               {
+                $user_stk_data = $do->getStockData($symbol);
+                $new_shares = $shares;
                 // user made a appropriate buy request
                 // add new or update existing stock information into the stocks table
                 $do->buyStock($symbol, $shares);
@@ -258,8 +260,6 @@
                 array_push($alerts, array("message" => $alert, "type" => "success"));
 
                 // calculate total shares owned for stock
-                $user_stk_data = $do->getStockData($symbol);
-                $new_shares = $shares;
                 if ($user_stk_data['numRows'] == 1) {
                   $new_shares += (int)$user_stk_data['result'][0]['shares'];
                 }
@@ -504,8 +504,41 @@
           $route = 'login';
           break;
         }
-        // get argument from get request
-        $symbol = $_GET['symbol'];
+        $quoted = FALSE;
+
+        if(isset($_GET['symbol'])){
+          // get argument from get request
+          $symbol = $_GET['symbol'];
+
+          // connect to API to get stock information
+          $url = sprintf($api_url, $symbol);
+          $ch = curl_init();
+          curl_setopt($ch,CURLOPT_URL,$url);
+          curl_setopt($ch,CURLOPT_HTTPGET,TRUE);
+          curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+          curl_setopt($ch,CURLOPT_SSL_ENABLE_ALPN,FALSE);
+          curl_setopt($ch,CURLOPT_SSL_ENABLE_NPN,FALSE);
+          curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
+          curl_setopt($ch,CURLOPT_SSL_VERIFYSTATUS,FALSE);
+
+          $json = curl_exec($ch);
+          curl_close($ch);
+          // incomplete request transfer between API
+          if (!$json) {
+            array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
+          }
+          else {
+            $quote = json_decode($json);
+            // stock does not exist
+            if (!$quote){
+              array_push($alerts, array("message" => "Stock does not exist!", "type" => "warning"));
+            }
+            else {
+              // indicate successfull quote
+              $quoted = TRUE;
+            }
+          }
+        }
 
         // extract user data from database
         $do = new DatabaseObject($_SESSION['sess_id']);
@@ -520,8 +553,10 @@
                                     'username' => $user_data['username'], 'b' => $b, 't' => $t,
                                     'cash' => $user_data['cash'],
                                     'shares' => $shares,
-                                    'symbol' => $symbol]);
-
+                                    'symbol' => $symbol,
+                                    'alerts' => $alerts,
+                                    'quoted' => $quoted]);
+        $alerts = array();
         $routing=FALSE;
         break;
 
