@@ -24,7 +24,7 @@
   // start new session
   session_start();
 
-  $api_url = $b."/stock/%s/quote?".$t;
+  $api_url = $b."/stock/%s/quote?".$t."&displayPercent=true";
 
   // flag to check if routing continues after any iteration
   $routing = TRUE;
@@ -132,7 +132,6 @@
       case 'home':
         // reroute to login if user user is not logged in
         if(!isset($_SESSION['sess_id'])) {
-          array_push($alerts, array("message" => "Log in to get access!", "type" => "secondary"));
           $route = 'login';
           break;
         }
@@ -241,7 +240,6 @@
               else
               {
                 $user_stk_data = $do->getStockData($symbol);
-                $new_shares = $shares;
                 // user made a appropriate buy request
                 // add new or update existing stock information into the stocks table
                 $do->buyStock($symbol, $shares);
@@ -258,6 +256,7 @@
                 // alert user after success
                 array_push($alerts, array("message" => $alert, "type" => "success"));
 
+                $new_shares = $shares;
                 // calculate total shares owned for stock
                 if ($user_stk_data['numRows'] == 1) {
                   $new_shares += (int)$user_stk_data['result'][0]['shares'];
@@ -365,12 +364,18 @@
                   $alert = " You now do not own any shares of this stock.";
                 } else if ($rem_shares == 1){
                   $alert = " You now own 1 share of this stock ";
+                  $alert .= "at a total value of $".number_format((float)$quote->latestPrice * $rem_shares,2);
                 } else{
                   $alert = " You now own ".number_format($rem_shares)." shares of this stock ";
+                  $alert .= "at a total value of $".number_format((float)$quote->latestPrice * $rem_shares,2);
                 }
-                $alert .= "at a total value of $".number_format((float)$quote->latestPrice * $rem_shares,2);
 
                 array_push($alerts, array("message" => $alert, "type" => "info"));
+                $user_stocks = $do->getStocks();
+                $stocks = array();
+                foreach ($user_stocks['result'] as $row){
+                  array_push($stocks, $row['symbol']);
+                }
               }
             }
           }
@@ -599,11 +604,14 @@
           $do = new DatabaseObject($_SESSION['sess_id']);
           $user_data = $do->getUserData();
           $amount = $_POST['amount'];
-          if ($amount <= $user_data['cash']){
+          if ($amount <= $user_data['cash'] && $amount != 0){
             // update user cash in database
             $do->updateCash(-$amount);
-            $alert = "$".number_format((float)$amount, 2, '.', '')." withdrawn from your account! You now have $".number_format((float)$user_data['cash'], 2, '.', '');
+            $alert = "$".number_format((float)$amount, 2)." withdrawn from your account! You now have $".number_format((float)$user_data['cash'], 2, '.', '');
             array_push($alerts, array("message" => $alert, "type" => "secondary"));
+          }
+          else if($amount == 0){
+            array_push($alerts, array("message" => "Your current balance is zero!", "type" => "warning"));
           }
           else {
             array_push($alerts, array("message" => "Amount exceeding current available balance!", "type" => "warning"));

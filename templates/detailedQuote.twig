@@ -24,11 +24,11 @@
         </div>
       </div>
       <hr>
-      <h1 class="display-2 trade-font" style="text-align:center">{{symbol}}</h1>
+      <h1 class="display-4 trade-font" style="text-align:center">{{symbol}}</h1>
       <hr>
       <img id="logo" class="img-fluid float-right" src="https://storage.googleapis.com/iex/api/logos/{{symbol}}.png">
-      <div class="display-3 company-attribute" id="companyName"></div>
-      <div class="subtitle display-4 company-attribute" id="sector"></div>
+      <div class="display-4 company-attribute" id="companyName"></div>
+      <div class="subtitle company-attribute" id="sector"></div>
       <hr style="margin-top:80px">
       <h1 class="sub-heading lead">Profile</h1>
       <p class="company-attribute" id="description"></p>
@@ -56,6 +56,11 @@
         <div class="col">
           <div id="tags"></div>
         </div>
+      </div>
+      <hr>
+      <b class="sub-heading lead">Related</b> <br>
+      <div id="peers" class="row">
+
       </div>
       <hr>
       <div class="row">
@@ -134,11 +139,11 @@
     </div>
     <div class="col-lg">
       <div class="row">
-        <div class="col">
-          <p class="display-4" id="date"></p>
-          <p class="display-4" id="time"></p>
+        <div class="col-sm">
+          <p class="lead" id="date"></p>
+          <p class="lead" id="time"></p>
         </div>
-        <div class="col" style="text-align:center;">
+        <div class="col-lg" style="text-align:center;">
           <canvas id="clock" width="200" height="200"></canvas>
         </div>
       </div>
@@ -816,8 +821,8 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
-    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news", function(response){
-
+    $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news,peers,largest-trades&displayPercent=true", function(response){
+      console.log(response);
       var reqClasses = ['company','quote','previous','advanced-stats'];
       reqClasses.forEach(function(item, index){
         let elements = document.getElementsByClassName(item+'-attribute');
@@ -871,6 +876,16 @@
         }
       });
 
+      response.peers.forEach(function(item, index){
+        let col = document.createElement('div');
+        $(col).addClass('col trade-font');
+        let a = document.createElement('a');
+        $(a).attr('href', 'detailedQuote?symbol='+item);
+        $(a).html(item);
+        $(col).append(a);
+        $('#peers').append(col);
+      });
+
       $('#website').attr("href", response.company.website);
       var s='';
       response.company.tags.forEach(function(item, index){
@@ -912,6 +927,8 @@
         $('#carousel-inner').append(createCarouselItem("No news for {{stock}} stock","#","","",new Date(),"",active));
         $('#carousel-indicators').append(createListItem(slideIdx,active));
       }
+
+
     });
 
     $.getJSON("{{ b }}/stock/{{symbol}}/chart/1d?{{t}}", function(chart){
@@ -1017,9 +1034,6 @@
       ]
       });
     });
-
-
-
 
 });
 </script>

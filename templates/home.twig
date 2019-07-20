@@ -53,19 +53,19 @@
               <th scope="col">Shares</th>
               <th scope="col">Price <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">Change <span class="badge badge-pill badge-success">Live</span></th>
-              <th scope="col">Percent Change <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">TOTAL</th>
           </tr>
       </thead>
       <tbody>
         {% for stock in stocks %}
-        <tr class="stock-links pointer tippy table-rows" data-tippy-content="Go to {{stock.name}} stock">
+        <tr class="stock-links pointer tippy table-rows" data-tippy-content="Click to go to {{stock.name}} stock">
           <td id="symbol" class="trade-font">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
           <td class="cash-text">${{ stock.price }}</td>
-          <td class="cash-text change" value="{{stock.change}}"></td>
-          <td class="cash-text changePercent" value="{{stock.changePercent}}"></td>
+          <td class="cash-text change" value="{{stock.change}}">
+            (<span class="cash-text changePercent" value="{{stock.changePercent}}"></span>)
+          </td>
           <td class="cash-text">${{ stock.total }}</td>
         </tr>
 
@@ -80,12 +80,10 @@
           <td></td>
           <td></td>
           <td></td>
-          <td></td>
           <td class="cash-text" style="font-size:18px;">${{ cash }}</td>
         </tr>
         <tr>
           <td style="font-size:18px;"><strong>Total</strong></td>
-          <td></td>
           <td></td>
           <td></td>
           <td></td>
@@ -132,21 +130,32 @@
     if(cardSet){
       $(cardText).addClass('card-text');
       var color = "white";
-
-      var img = "";
-
+      var img;
       if (changePercent > 0.00){
-        img = "<img style=\"width:8%;height:10%;color:#2ecc71;\"src=\"/static/caret-up.png\" alt=\"caret top\">";
+        img = $(caretUp).clone();
         color = "#2ecc71";
       }
       else if (changePercent < 0.00){
-        img = "<img style=\"width:8%;height:10%;color:red;\"src=\"/static/caret-down.png\" alt=\"caret top\">";
+        img = $(caretDown).clone();
         color = "red";
       }
-      var text = "<span class='cash-text'>$" + formatNumber(price) +
-                  "</span><br><span style='color:" + color + ";font-weight:bold;'>"
-                  + img + changePercent.toFixed(2) + "%<br>"+ img + "$" + change +" </span><br>Vol: "+getPrefix(volume);
-      $(cardText).html(text);
+      var cashSpan = document.createElement('span');
+      $(cashSpan).addClass('cash-text');
+      $(cashSpan).text("$" + formatNumber(price));
+
+      var changeSpan = document.createElement('span');
+      $(changeSpan).addClass('cash-text');
+      $(changeSpan).css('color',color);
+      $(changeSpan).append($(img).clone());
+      $(changeSpan).append(document.createElement('br'));
+      $(changeSpan).append(formatChange(change, "d"));
+      $(changeSpan).append("(" + formatChange(changePercent, "p")+ ")");
+
+      $(cardText).append(cashSpan);
+      $(cardText).append(document.createElement('hr'));
+      $(cardText).append(changeSpan);
+      $(cardText).append(document.createElement('hr'));
+      $(cardText).append("Vol: " + getPrefix(volume));
     }
     var cardBody = document.createElement('div');
     $(cardBody).addClass('card-body text-secondary');
@@ -195,6 +204,19 @@
 
 <script type="text/javascript">
   $(document).ready(function(){
+    $('.changePercent').each(function(index, element){
+      console.log(element);
+      let c = parseFloat($(element).attr('value'));
+      if (c) {
+        if (c > 0) {
+          $(element).css('color',"#27ae60");
+        }
+        else{
+          $(element).css('color',"red");
+        }
+        $(element).html(formatChange(c,"f"));
+      }
+    });
     $('.change').each(function(index, element){
       let c = parseFloat($(element).attr('value'));
       if (c > 0) {
@@ -203,17 +225,7 @@
       else {
         $(element).css('color',"red");
       }
-      $(element).html('$' + formatNumber(c));
-    });
-    $('.changePercent').each(function(index, element){
-      let c = parseFloat($(element).attr('value'));
-      if (c > 0) {
-        $(element).css('color',"#27ae60");
-      }
-      else {
-        $(element).css('color',"red");
-      }
-      $(element).html(c.toFixed(4)+"%");
+      $(element).prepend(formatChange(c,"d"));
     });
 
 
@@ -225,9 +237,11 @@
     var traders = ['mostactive', 'gainers', 'losers','iexvolume','iexpercent'];
 
     $(traders).each(function(index,element){
-      makeStockSection(headings[index], element);
-      var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}";
+      var url = "{{ b }}/stock/market/list/"+element+"?{{ t }}&displayPercent=true";
       $.getJSON(url, function(list) {
+        console.log(element);
+        console.log(list);
+        makeStockSection(headings[index], element);
         if(!list || list.length == 0){
           let card = makeStockCard('N/A','No Stocks found in list', 0, 0, 0, 0, false);
           $('.'+element+'-stocks').append(card);
@@ -241,7 +255,7 @@
                list[i].change,
                list[i].avgTotalVolume, true);
            tippy(card,{
-             content: "Go to " + list[i].companyName + " stock",
+             content: "Click to go to " + list[i].companyName + " stock",
              animation: 'fade',
              arrow: true,
              arrowType: 'round',

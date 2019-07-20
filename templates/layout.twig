@@ -28,28 +28,59 @@
 
       <title>Stocker: {{ title }}</title>
       <script type="text/javascript">
-      function getPrefix(x){
-        let num = x.toString().split(".")[0].length;
-        let pow;
-        let prefix;
-        if (num > 12){pow=12;prefix="T";}
-        else if (num > 9){pow=9;prefix="B";}
-        else if (num > 6){pow=6;prefix="M";}
-        else{return addCommas(x);}
-        let prefixed =  x / Math.pow(10,pow);
-        prefixed = prefixed.toFixed(3).toString() + prefix;
-        return prefixed;
+      function getPrefix(largeNumber){
+        if(largeNumber){
+          let num = largeNumber.toString().split(".")[0].length;
+          let pow;
+          let prefix;
+          if (num > 12){pow=12;prefix="T";}
+          else if (num > 9){pow=9;prefix="B";}
+          else if (num > 6){pow=6;prefix="M";}
+          else{return addCommas(largeNumber);}
+          let prefixed =  largeNumber / Math.pow(10,pow);
+          prefixed = prefixed.toFixed(3).toString() + prefix;
+          return prefixed;
+        }
+        else {
+          return "N/A";
+        }
       }
 
-      function addCommas(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      function addCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       }
 
-      function formatNumber(x) {
-        var x = parseFloat(x).toFixed(2)
-        var parts = x.toString().split(".");
+      function formatNumber(number) {
+        var number = parseFloat(number).toFixed(2)
+        var parts = number.toString().split(".");
         parts[0] = addCommas(parts[0]);
         return parts.join(".");
+      }
+
+      function formatChange(change, type){
+        if (!change){
+          return "N/A";
+        }
+        else {
+          var s;
+          if (change > 0) {
+            s ="+" + formatNumber(change.toFixed(2));
+          }
+          else if (change < 0){
+            s = formatNumber(change.toFixed(2));
+          }
+          else {
+            s = formatNumber(change);
+          }
+
+          if (type == "d"){
+            return "$" + s;
+          }
+          else {
+            return s + "%";
+          }
+
+        }
       }
 
       function getNumber(x) {
@@ -60,9 +91,12 @@
       }
 
       $(document).ready(function(){
-        var amt = getNumber("{{cash}}");
-        $('#withdraw-amount-input').val(amt);
-        $('#withdraw-amount-input').attr('max',amt)
+        if(parseFloat("{{cash}}") > 0){
+          var amt = getNumber("{{cash}}");
+
+          $('#withdraw-amount-input').val(amt);
+          $('#withdraw-amount-input').attr('max',amt)
+        }
       });
 
       var caretUp = document.createElement('img');

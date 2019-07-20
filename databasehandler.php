@@ -48,11 +48,11 @@
     public function buyStock($symbol, $shares_bought){
       $user_stock = $this->getStockData($symbol);
       if($user_stock['numRows'] == 0){
-        $this->insert('stocks', ['user_id', 'symbol', 'shares'], [$this->user_id, $symbol, $shares_bought]);
+        $this->insert('stocks', ['user_id', 'symbol', 'shares'], [$this->user_id, strtoupper($symbol), $shares_bought]);
       } else {
         $user_shares = $user_stock['result'][0]['shares'];
         $new_shares = (int)$user_shares + (int)$shares_bought;
-        $this->update('stocks', ['shares'], [$new_shares], ['user_id','symbol'], [$this->user_id, $symbol]);
+        $this->update('stocks', ['shares'], [$new_shares], ['user_id','symbol'], [$this->user_id, strtoupper($symbol)]);
       }
     }
 
@@ -72,7 +72,7 @@
     public function addTransaction($symbol, $trans_price, $shares, $trans_type){
       $this->insert('transactions',
       ['user_id', 'symbol', 'price', 'is_purchase', 'shares'],
-      [$this->user_id, $symbol, round((float)$trans_price,2), $trans_type, $shares]);
+      [$this->user_id, strtoupper($symbol), round((float)$trans_price,2), $trans_type, $shares]);
     }
 
     public function updateCash($change_amount){

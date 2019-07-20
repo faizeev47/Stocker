@@ -48,12 +48,14 @@ main
 .alert
 {
   text-align:center;
+  font-size:20px;
+  font-weight: bold;
 }
 
 .card
 {
-  min-width: 12em;
-  max-width: 12em;
+  min-width: 13em;
+  max-width: 13em;
 }
 
 .container-fluid > .card-columns
@@ -133,13 +135,6 @@ nav .navbar-brand:active, nav .navbar-brand:hover
 
 /* IDs */
 
-#date
-{
-  padding: 20px;
-  font-size:35px;
-  text-align: center;
-}
-
 #news-container
 {
   background-color:#bdc3c7;
@@ -149,13 +144,6 @@ nav .navbar-brand:active, nav .navbar-brand:hover
 #seconds
 {
   color: #e74c3c;
-}
-
-#time
-{
-  padding: 20px;
-  font-size: 50px;
-  text-align: center;
 }
 
 #user-menu
