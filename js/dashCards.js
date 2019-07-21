@@ -1,4 +1,4 @@
-function makeStockCard(symbol, companyName, price, changePercent, change, volume, cardSet){
+function makeStockCard(symbol, companyName, latestPrice, close, open, changePercent, change, latestVolume, volume, avgTotalVolume, cardSet){
   var cardTitle = document.createElement('h5');
   $(cardTitle).addClass('card-title');
   $(cardTitle).text(companyName);
@@ -16,9 +16,20 @@ function makeStockCard(symbol, companyName, price, changePercent, change, volume
       img = $(caretDown).clone();
       color = "red";
     }
-    var cashSpan = document.createElement('span');
-    $(cashSpan).addClass('cash-text');
-    $(cashSpan).text("$" + formatNumber(price));
+    var lpSpan = document.createElement('span');
+    $(lpSpan).addClass('cash-text');
+    $(lpSpan).text("$" + formatNumber(latestPrice));
+    if(open){
+      var opSpan = document.createElement('span');
+      $(opSpan).addClass('cash-text');
+      $(opSpan).text("$" + formatNumber(open));
+    }
+
+    if(close){
+      var clSpan = document.createElement('span');
+      $(clSpan).addClass('cash-text');
+      $(clSpan).text("$" + formatNumber(close));
+    }
 
     var changeSpan = document.createElement('span');
     $(changeSpan).addClass('cash-text');
@@ -28,15 +39,31 @@ function makeStockCard(symbol, companyName, price, changePercent, change, volume
     $(changeSpan).append(formatChange(change, "d"));
     $(changeSpan).append("(" + formatChange(changePercent, "p")+ ")");
 
-    $(cardText).append(cashSpan);
+    $(cardText).append("Latest: ");
+    $(cardText).append(lpSpan);
+    $(cardText).append(document.createElement('br'));
+    if(open){
+      $(cardText).append("Opening: ");
+      $(cardText).append(opSpan);
+      $(cardText).append(document.createElement('br'));
+    }
+    if(close){
+      $(cardText).append("Closing: ");
+      $(cardText).append(clSpan);
+    }
     $(cardText).append(document.createElement('hr'));
     $(cardText).append(changeSpan);
     $(cardText).append(document.createElement('hr'));
-    $(cardText).append("Vol: " + getPrefix(volume));
+    var string = latestVolume ? "Latest Volume: " + getPrefix(latestVolume) :
+                volume ? "Volume" + getPrefix(volume) :
+                avgTotalVolume ? "Average Volume: " + getPrefix(avgTotalVolume) :
+                "N/A";
+    $(cardText).append(string);
   }
   var cardBody = document.createElement('div');
   $(cardBody).addClass('card-body text-secondary');
   $(cardBody).append(cardTitle);
+  $(cardBody).append(document.createElement('hr'));
   $(cardBody).append(cardText);
   var cardHeader = document.createElement('div');
   $(cardHeader).addClass('card-header trade-font');

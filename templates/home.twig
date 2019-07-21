@@ -51,8 +51,9 @@
               <th scope="col">Symbol</th>
               <th scope="col">Name</th>
               <th scope="col">Shares</th>
-              <th scope="col">Price <span class="badge badge-pill badge-success">Live</span></th>
+              <th scope="col">Close Price <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">Change <span class="badge badge-pill badge-success">Live</span></th>
+              <th scope="col">Latest Price <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">TOTAL</th>
           </tr>
       </thead>
@@ -62,16 +63,17 @@
           <td id="symbol" class="trade-font">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
-          <td class="cash-text">${{ stock.price }}</td>
+          <td class="cash-text">${{ stock.close }}</td>
           <td class="cash-text change" value="{{stock.change}}">
             (<span class="cash-text changePercent" value="{{stock.changePercent}}"></span>)
           </td>
+          <td class="cash-text">${{ stock.latestPrice }}</td>
           <td class="cash-text">${{ stock.total }}</td>
         </tr>
 
         {% else %}
         <tr>
-          <td colspan="5"><a href="/buy"><div class="lead">Buy some stocks to display them here</div></a></td>
+          <td colspan="7"><a href="/buy"><div class="lead">Buy some stocks to display them here</div></a></td>
         </tr>
         {% endfor %}
         <tr>
@@ -80,10 +82,12 @@
           <td></td>
           <td></td>
           <td></td>
+          <td></td>
           <td class="cash-text" style="font-size:18px;">${{ cash }}</td>
         </tr>
         <tr>
           <td style="font-size:18px;"><strong>Total</strong></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
@@ -123,7 +127,6 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $('.changePercent').each(function(index, element){
-      console.log(element);
       let c = parseFloat($(element).attr('value'));
       if (c) {
         if (c > 0) {
@@ -137,10 +140,11 @@
     });
     $('.change').each(function(index, element){
       let c = parseFloat($(element).attr('value'));
+      let img;
       if (c > 0) {
         $(element).css('color',"#27ae60");
       }
-      else {
+      else if (c < 0){
         $(element).css('color',"red");
       }
       $(element).prepend(formatChange(c,"d"));
@@ -167,11 +171,11 @@
         var count = Object.keys(list).length;
         for (var i = 0; i < count; i++){
           var card = makeStockCard(list[i]['symbol'],
-               list[i].companyName,
-               list[i].latestPrice,
-               list[i].changePercent,
-               list[i].change,
-               list[i].avgTotalVolume, true);
+               list[i].companyName, list[i].latestPrice,
+               list[i].close,list[i].open,
+               list[i].changePercent, list[i].change,
+               list[i].latestVolume, list[i].volume,
+               list[i].avgTotalVolume,  true);
            tippy(card,{
              content: "Click to go to " + list[i].companyName + " stock",
              animation: 'fade',
