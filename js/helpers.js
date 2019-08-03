@@ -32,23 +32,28 @@ function formatChange(change, type){
     return "N/A";
   }
   else {
-    var s;
+    var s = document.createElement('span');
     if (change > 0) {
-      s ="+" + formatNumber(change.toFixed(2));
+      $(s).css('color', "#27ae60");
+      s.innerHTML = "+" + formatNumber(change.toFixed(2));
     }
     else if (change < 0){
-      s = formatNumber(change.toFixed(2));
+      $(s).css('color', "red");
+      s.innerHTML =  formatNumber(change.toFixed(2));
     }
     else {
-      s = formatNumber(change);
+      s.innerHTML =  formatNumber(change);
     }
 
-    if (type == "d"){
-      return "$" + s;
+    if (type == "cash"){
+      $(s).addClass('cash-text');
+      s.innerHTML = "$" + s.innerHTML;
     }
-    else {
-      return s + "%";
+    else if (type == "percent"){
+      $(s).addClass('cash-text');
+      s.innerHTML = s.innerHTML + "%";
     }
+    return s;
 
   }
 }

@@ -36,8 +36,10 @@ function makeStockCard(symbol, companyName, latestPrice, close, open, changePerc
     $(changeSpan).css('color',color);
     $(changeSpan).append($(img).clone());
     $(changeSpan).append(document.createElement('br'));
-    $(changeSpan).append(formatChange(change, "d"));
-    $(changeSpan).append("(" + formatChange(changePercent, "p")+ ")");
+    $(changeSpan).append(formatChange(change, "cash"));
+    $(changeSpan).append("(");
+    $(changeSpan).append(formatChange(changePercent, "percent"));
+    $(changeSpan).append(")");
 
     $(cardText).append("Latest: ");
     $(cardText).append(lpSpan);

@@ -82,68 +82,51 @@
           </div>
         </div>
       </div>
-      <hr>
-      <div class="row">
-        <div class="col">
-          <b class="sub-heading display-4">Charts</b> <br>
-          <div class="container-fluid">
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link" id="tab1" data-toggle="pill" href="#chart1" role="tab" aria-controls="chart1" aria-selected="true">1 Day</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" id="tab2" data-toggle="pill" href="#chart2" role="tab" aria-controls="chart2" aria-selected="false">1 Month</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="tab3" data-toggle="pill" href="#chart3" role="tab" aria-controls="chart3" aria-selected="false">3 Months</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="tab4" data-toggle="pill" href="#chart4" role="tab" aria-controls="chart4" aria-selected="false">6 Months</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="tab5" data-toggle="pill" href="#chart5" role="tab" aria-controls="chart5" aria-selected="false">1 Year</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="tab6" data-toggle="pill" href="#chart6" role="tab" aria-controls="chart6" aria-selected="false">2 Years</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" id="tab7" data-toggle="pill" href="#chart7" role="tab" aria-controls="chart7" aria-selected="false">5 Years</a>
-              </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-              <div class="tab-pane fade" id="chart1" role="tabpanel" aria-labelledby="tab1">
-                <div id="priceHistory1d" class="container"></div>
-              </div>
-              <div class="tab-pane fade show active" id="chart2" role="tabpanel" aria-labelledby="tab2">
-                <div id="priceHistory1m" class="container"></div>
-              </div>
-              <div class="tab-pane fade" id="chart3" role="tabpanel" aria-labelledby="tab3">
-                <div id="priceHistory3m" class="container"></div>
-              </div>
-              <div class="tab-pane fade" id="chart4" role="tabpanel" aria-labelledby="tab4">
-                <div id="priceHistory6m" class="container"></div>
-              </div>
-              <div class="tab-pane fade" id="chart5" role="tabpanel" aria-labelledby="tab5">
-                <div id="priceHistory1y" class="container"></div>
-              </div>
-              <div class="tab-pane fade" id="chart6" role="tabpanel" aria-labelledby="tab6">
-                <div id="priceHistory2y" class="container"></div>
-              </div>
-              <div class="tab-pane fade" id="chart7" role="tabpanel" aria-labelledby="tab7">
-                <div id="priceHistory5y" class="container"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
     <div class="col-lg">
       <div class="row">
-        <div class="col-sm">
+        <div class="col-lg">
+          <b>latest</b>
+          <br>
+          <span class ="cash-text extra-detailed quote-attribute" id="latestPrice" type="cash"></span>
+          <div id="changePercent-container">
+            <span class ="cash-text detailed quote-attribute" change="yes" id="change" type="cash"></span>
+            (<span class ="cash-text detailed quote-attribute" change="yes" id="changePercent" type="percent"></span>)
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm">
+              <b>Open</b>
+              <br>
+              <span class ="cash-text detailed quote-attribute" id="open" type="cash"></span>
+              <br>
+              <span name="openTime" isDate="yes" isTime="yes" class="badge badge-pill badge-secondary pointer tooltips">date/time</span>
+            </div>
+            <div class="col-sm">
+              <b>Close</b>
+              <br>
+              <span class ="cash-text detailed quote-attribute" id="close" type="cash"></span>
+              <br>
+              <span name="closeTime" isDate="yes"  isTime="yes" class="badge badge-pill badge-secondary pointer tooltips">date/time</span>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <b>Low</b><br>
+              <span class ="cash-text detailed quote-attribute" id="low" type="cash"></span>
+            </div>
+            <div class="col">
+              <b>High</b><br>
+              <span class ="cash-text detailed quote-attribute" id="high" type="cash"></span>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="col-sm centered">
           <p class="lead" id="date"></p>
           <p class="lead" id="time"></p>
-        </div>
-        <div class="col-lg" style="text-align:center;">
           <canvas id="clock" width="200" height="200"></canvas>
         </div>
       </div>
@@ -175,98 +158,29 @@
       <div class="row">
         <div class="col-sm">
           <b>Latest Update</b><br>
-          <span id="update-source-badge" class="badge badge-pill badge-secondary pointer">source</span>
+          <span name="latestSource" class="badge badge-pill badge-secondary pointer tooltips">source</span>
         </div>
         <div id="latestUpdate" class="col-lg">
-
         </div>
       </div>
 
       <hr>
 
       <div class="row">
-        <div class="col-sm">
-          <b>Opening price</b><br>
-          <span class ="cash-text detailed quote-attribute" id="open">$</span>
-        </div>
-        <div class="col-lg">
-          <b>Open Time</b><hr>
-          <span id="openTime"></span>
-        </div>
-        <div class="col-sm">
-          <b>Closing price</b><br>
-          <span class ="cash-text detailed quote-attribute" id="close">$</span>
-        </div>
-        <div class="col-lg">
-          <b>Close Time</b><hr>
-          <span id="closeTime"></span>
-        </div>
-      </div>
-
-      <hr>
-
-      <div class="row">
-        <div class="col">
-          <b>Previous Day</b><hr>
-          <span id="previousDate"></span>
-        </div>
-        <div class="col">
-          <b>Previous Open</b><br>
-          <span class ="cash-text detailed previous-attribute" id="open">$</span>
-        </div>
-        <div class="col">
-          <b>Previous Close</b><br>
-          <span class ="cash-text detailed previous-attribute" id="close">$</span>
-        </div>
-      </div>
-
-      <hr>
-
-      <div class="row">
-        <div class="col">
-          <b>Low</b><br>
-          <span class ="cash-text detailed quote-attribute" id="low">$</span>
-        </div>
-        <div class="col">
-          <span id="price-source-badge" class="badge badge-pill badge-secondary pointer">source</span>
-          <b>Latest</b><br>
-          <span class ="cash-text detailed quote-attribute" id="latestPrice">$</span>
-        </div>
-        <div class="col">
-          <b>High</b><br>
-          <span class ="cash-text detailed quote-attribute" id="high">$</span>
-        </div>
         <div class="col">
           <b>Extended Price</b><br>
-          <span class ="cash-text detailed quote-attribute" id="extendedPrice">$</span>
-        </div>
-      </div>
-
-      <hr>
-
-      <div class="row">
-        <div class="col">
-          <b>% Change</b><br>
-          <div id="changePercent-container">
-            <span class ="cash-text detailed quote-attribute" change="yes" id="changePercent">%</span>
-          </div>
-        </div>
-        <div class="col">
-          <b>Change</b><br>
-          <div id="change-container">
-            <span class ="cash-text detailed quote-attribute"  change="yes" id="change">$</span>
-          </div>
+          <span class ="cash-text detailed quote-attribute" id="extendedPrice" type="cash"></span>
         </div>
         <div class="col">
           <b>Extended % Change</b><br>
           <div id="extendedChangePercent-container">
-            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChangePercent">%</span>
+            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChangePercent" type="percent"></span>
           </div>
         </div>
         <div class="col">
           <b>Extended Change</b><br>
           <div id="extendedChange-container">
-            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChange">$</span>
+            <span class ="cash-text detailed quote-attribute" change="yes" id="extendedChange" type="cash"></span>
           </div>
         </div>
       </div>
@@ -276,22 +190,22 @@
       <div class="row">
         <div class="col">
           <b>52 Week High</b><br>
-          <span class ="cash-text detailed quote-attribute" id="week52High">$</span>
+          <span class ="cash-text detailed quote-attribute" id="week52High" type="cash"></span>
         </div>
         <div class="col">
           <b>52 Week Low</b><br>
-          <span class ="cash-text detailed quote-attribute" id="week52Low">$</span>
+          <span class ="cash-text detailed quote-attribute" id="week52Low" type="cash"></span>
         </div>
         <div class="col">
           <div id="week52change-container">
             <b>52 Week Change</b><br>
-            <span class ="cash-text detailed advanced-stats-attribute" id="week52change">%</span>
+            <span class ="cash-text detailed advanced-stats-attribute" id="week52change"  type="percent"></span>
           </div>
         </div>
         <div class="col">
           <div id="ytdChange-container">
             <b>Year-to-Day Change</b><br>
-            <span class ="cash-text detailed quote-attribute" change="yes" id="ytdChange">%</span>
+            <span class ="cash-text detailed quote-attribute" change="yes" id="ytdChange"  type="percent"></span>
           </div>
         </div>
       </div>
@@ -301,15 +215,15 @@
       <div class="row">
         <div class="col">
           <b>Average 30-day volume</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="avg30Volume"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="avg30Volume"></span>
         </div>
         <div class="col">
           <b>Average 10-day volume</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="avg10Volume"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="avg10Volume"></span>
         </div>
         <div class="col">
           <b>Latest Volume</b><br>
-          <span class ="detailed quote-attribute" format="yes" id="latestVolume"></span>
+          <span class ="detailed quote-attribute" prefix="yes" id="latestVolume"></span>
         </div>
       </div>
 
@@ -318,15 +232,15 @@
       <div class="row">
         <div class="col">
           <b>Shares Outstanding</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="sharesOutstanding"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="sharesOutstanding"></span>
         </div>
         <div class="col">
           <b>Floating Shares</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="float"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="float"></span>
         </div>
         <div class="col">
           <b>Market Cap</b><br>
-          <span class ="detailed quote-attribute" format="yes" id="marketCap"></span>
+          <span class ="detailed quote-attribute" prefix="yes" id="marketCap"></span>
         </div>
       </div>
 
@@ -335,19 +249,19 @@
       <div class="row">
         <div class="col">
           <b>Total Cash</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="totalCash">$</span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="totalCash" type="cash"></span>
         </div>
         <div class="col">
           <b>Current Debt</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="currentDebt">$</span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="currentDebt" type="cash"></span>
         </div>
         <div class="col">
           <b>Revenue</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="revenue">$</span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="revenue" type="cash"></span>
         </div>
         <div class="col">
           <b>Gross Profit</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="grossProfit">$</span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="grossProfit" type="cash"></span>
         </div>
       </div>
 
@@ -356,19 +270,19 @@
       <div class="row">
         <div class="col">
           <b>Total Employees</b><br>
-          <span class ="detailed company-attribute" format="yes" id="employees"></span>
+          <span class ="detailed company-attribute" prefix="yes" id="employees"></span>
         </div>
         <div class="col">
           <b>Total Revenue</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" format="yes" id="totalRevenue">$</span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="totalRevenue" ></span>
         </div>
         <div class="col">
           <b>Revenues Per Share</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="revenuePerShare"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="revenuePerShare"></span>
         </div>
         <div class="col">
           <b>Revenues Per Employee</b><br>
-          <span class ="detailed advanced-stats-attribute" format="yes" id="revenuePerEmployee"></span>
+          <span class ="detailed advanced-stats-attribute" prefix="yes" id="revenuePerEmployee"></span>
         </div>
       </div>
 
@@ -378,7 +292,7 @@
         <div class="col">
           <b>Profit Margin</b><br>
           <div id="profitMargin-container">
-            <span class ="detailed advanced-stats-attribute" round="yes" change="yes" id="profitMargin"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="profitMargin"></span>
           </div>
         </div>
         <div class="col">
@@ -389,7 +303,7 @@
         </div>
         <div class="col">
           <b>Enterprise Value</b><br>
-          <span class ="cash-text detailed advanced-stats-attribute" format="yes" id="enterpriseValue">$</span>
+          <span class ="cash-text detailed advanced-stats-attribute" prefix="yes" id="enterpriseValue" type="cash"></span>
         </div>
         <div class="col">
           <b>Beta</b><br>
@@ -405,30 +319,84 @@
         <div class="col">
           <b>Price-sales ratio</b><br>
           <div id="priceToSales-container">
-            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="priceToSales"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToSales"></span>
           </div>
         </div>
         <div class="col">
           <b>Price-Book ratio</b><br>
           <div id="priceToBook-container">
-            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="priceToBook"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToBook"></span>
           </div>
         </div>
         <div class="col">
           <b>Forward price-to-earnings</b><br>
           <div id="forwardPERatio-container">
-            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="forwardPERatio"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="forwardPERatio"></span>
           </div>
         </div>
         <div class="col">
           <b>PEG ratio</b><br>
           <div id="pegRatio-container">
-            <span class ="detailed advanced-stats-attribute" round="yes"   change="yes" id="pegRatio"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="pegRatio"></span>
           </div>
         </div>
       </div>
 
 
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col">
+      <b class="sub-heading display-4">Charts</b> <br>
+      <div class="container-fluid">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link" id="tab1" data-toggle="pill" href="#chart1" role="tab" aria-controls="chart1" aria-selected="true">1 Day</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" id="tab2" data-toggle="pill" href="#chart2" role="tab" aria-controls="chart2" aria-selected="false">1 Month</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="tab3" data-toggle="pill" href="#chart3" role="tab" aria-controls="chart3" aria-selected="false">3 Months</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="tab4" data-toggle="pill" href="#chart4" role="tab" aria-controls="chart4" aria-selected="false">6 Months</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="tab5" data-toggle="pill" href="#chart5" role="tab" aria-controls="chart5" aria-selected="false">1 Year</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="tab6" data-toggle="pill" href="#chart6" role="tab" aria-controls="chart6" aria-selected="false">2 Years</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="tab7" data-toggle="pill" href="#chart7" role="tab" aria-controls="chart7" aria-selected="false">5 Years</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade" id="chart1" role="tabpanel" aria-labelledby="tab1">
+            <div id="priceHistory1d" class="container"></div>
+          </div>
+          <div class="tab-pane fade show active" id="chart2" role="tabpanel" aria-labelledby="tab2">
+            <div id="priceHistory1m" class="container"></div>
+          </div>
+          <div class="tab-pane fade" id="chart3" role="tabpanel" aria-labelledby="tab3">
+            <div id="priceHistory3m" class="container"></div>
+          </div>
+          <div class="tab-pane fade" id="chart4" role="tabpanel" aria-labelledby="tab4">
+            <div id="priceHistory6m" class="container"></div>
+          </div>
+          <div class="tab-pane fade" id="chart5" role="tabpanel" aria-labelledby="tab5">
+            <div id="priceHistory1y" class="container"></div>
+          </div>
+          <div class="tab-pane fade" id="chart6" role="tabpanel" aria-labelledby="tab6">
+            <div id="priceHistory2y" class="container"></div>
+          </div>
+          <div class="tab-pane fade" id="chart7" role="tabpanel" aria-labelledby="tab7">
+            <div id="priceHistory5y" class="container"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <hr>
@@ -487,51 +455,54 @@
   $(document).ready(function(){
     $.getJSON("{{ b }}/stock/{{ symbol }}/batch?{{ t }}&types=company,quote,previous,advanced-stats,news,peers,largest-trades&displayPercent=true", function(response){
       console.log(response);
+      // classes of requests in batch request
       var reqClasses = ['company','quote','previous','advanced-stats'];
-      reqClasses.forEach(function(item, index){
-        let elements = document.getElementsByClassName(item+'-attribute');
+
+      // iterate over each class of requests
+      // get all corresponding HTML elements in the class
+      // set respective value for the request class
+      reqClasses.forEach(function(className){
+        // get elements in the class and loop over them
+        let elements = document.getElementsByClassName(className+'-attribute');
         for (let element of elements){
-          let resp = response[item][element.id];
+          // get attribute value from request response for respective element
+          let resp = response[className][element.id];
+          // check for null value
           if(resp){
+            // preprocess the response valuePrefix
+            if($(element).attr('round')) {
+              resp = parseFloat(resp).toFixed(3);
+            }
+            if($(element).attr('prefix')) {
+              resp = getPrefix(resp);
+            }
+
+
+            // check type of value
+            let type =$(element).attr('type')
+            // value is of type change
             if ($(element).attr('change')){
-              var change = resp;
-              var color = "black";
-              if (change > 0.00){
-                var caret = $(caretUp).clone();
-                color = "#27ae60";
+              // set formatted change
+              $(element).html(formatChange(resp, type));
+              // add respective directional caret
+              if (parseFloat(resp) > 0.0){
+                $('#'+element.id+'-container').append($(caretUp).clone());
               }
-              else if (change < 0.00){
-                var caret = $(caretDown).clone();
-                color = "red";
+              else if(parseFloat(resp) < 0.0){
+                $('#'+element.id+'-container').append($(caretDown).clone());
               }
-              $('#'+element.id+'-container').append(caret.clone());
             }
-            if (element.innerHTML == "$"){
-              $(element).css('color',color);
-              if($(element).attr('format')){
-                resp = getPrefix(resp);
-              }
-              else {
-                resp = formatNumber(resp);
-              }
-              element.innerHTML = "$" + resp;
+            
+            else if (type == 'cash') {
+              $(element).html('$' + formatNumber(resp));
             }
-            else if (element.innerHTML == "%"){
-              $(element).css('color',color);
-              $(element).html(resp.toFixed(4) + '%');
+            else if(type == 'percent') {
+              $(element).html(resp + '%');
             }
-            else{
-              if($(element).attr('format')){
-                resp = addCommas(resp) + "<br>" + getPrefix(resp);
-              }
-              if($(element).attr('change')){
-                $(element).css('color',color);
-              }
-              if($(element).attr('round')){
-                resp = resp.toFixed(3);
-              }
-              element.innerHTML = resp;
+            else {
+              $(element).html(resp);
             }
+
           }
           else {
             $(element).css('color','black');
@@ -557,27 +528,41 @@
       });
       $('#tags').html(s);
 
-      setDateTime(response, 'latestUpdate', 'quote', 'latestUpdate', true);
-      setDateTime(response, 'openTime', 'quote', 'openTime', true);
-      setDateTime(response, 'closeTime', 'quote', 'closeTime', true);
-      setDateTime(response, 'previousDate', 'previous', 'date', false);
+      $('.tooltips').each(function(index, element){
+        let attr_name = $(element).attr('name')
+        let quote_attr = response.quote[attr_name]
+        if ((attr_name == "openTime"
+            || attr_name == "closeTime")
+            && !quote_attr){
+          quote_attr = response.previous.previousDate
+          $(element).removeAttr('isTime')
+        }
+        tippy(element, {
+          content: function(){
+            if ($(element).attr('isDate')) {
+              let html = getReadableDate(new Date(quote_attr))
+              if($(element).attr('isTime')) {
+                html += "<br>" + getReadableTime(new Date(quote_attr))
+              }
+              return html
+            }
+            else {
+              return quote_attr
+            }
+          },
+          animation: 'fade',
+          arrow: true,
+          arrowType: 'sharp',
+          delay: [500,5],
+          followCursor: false,
+        })
+      })
 
-      tippy(document.getElementById('update-source-badge'),{
-        content: response.quote.latestSource,
-        animation: 'fade',
-        arrow: true,
-        arrowType: 'sharp',
-        delay: [500,5],
-        followCursor: false,
-      });
-      tippy(document.getElementById('price-source-badge'),{
-        content: response.quote.calculationPrice,
-        animation: 'fade',
-        arrow: true,
-        arrowType: 'sharp',
-        delay: [500,5],
-        followCursor: false,
-      });
+
+      setDateTime(response, 'latestUpdate', 'quote', 'latestUpdate', true);
+      setDateTime(response, 'closeTime', 'quote', 'closeTime', true);
+
+
 
       let active = true;
       let slideIdx = 0;

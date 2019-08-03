@@ -43,7 +43,6 @@ foreach ($user_stocks['result'] as $row) {
                             'change' => $quote->change,
                             'changePercent' => $quote->changePercent,
                             'latestPrice' =>  number_format((float)$quote->latestPrice, 2),
-                            'close' => $quote->close ? number_format((float)$quote->close, 2) : '-',
                             'total' => number_format((float)$share_holding, 2)));
 }
 echo $twig->render('home.twig',['title' => 'Dashboard',

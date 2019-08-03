@@ -51,7 +51,6 @@
               <th scope="col">Symbol</th>
               <th scope="col">Name</th>
               <th scope="col">Shares</th>
-              <th scope="col">Close Price <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">Change <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">Latest Price <span class="badge badge-pill badge-success">Live</span></th>
               <th scope="col">TOTAL</th>
@@ -63,7 +62,6 @@
           <td id="symbol" class="trade-font">{{ stock.symbol }}</td>
           <td>{{stock.name}}</td>
           <td>{{ stock.shares }}</td>
-          <td class="cash-text">${{ stock.close }}</td>
           <td class="cash-text change" value="{{stock.change}}">
             (<span class="cash-text changePercent" value="{{stock.changePercent}}"></span>)
           </td>
@@ -82,12 +80,10 @@
           <td></td>
           <td></td>
           <td></td>
-          <td></td>
           <td class="cash-text" style="font-size:18px;">${{ cash }}</td>
         </tr>
         <tr>
           <td style="font-size:18px;"><strong>Total</strong></td>
-          <td></td>
           <td></td>
           <td></td>
           <td></td>
@@ -135,7 +131,7 @@
         else{
           $(element).css('color',"red");
         }
-        $(element).html(formatChange(c,"f"));
+        $(element).html(formatChange(c,"percent"));
       }
     });
     $('.change').each(function(index, element){
@@ -147,7 +143,7 @@
       else if (c < 0){
         $(element).css('color',"red");
       }
-      $(element).prepend(formatChange(c,"d"));
+      $(element).prepend(formatChange(c,"cash"));
     });
 
 

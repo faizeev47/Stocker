@@ -6,7 +6,7 @@
   global $loader;
   $loader = new \Twig\Loader\FilesystemLoader('templates');
   global $twig;
-  $twig = new \Twig\Environment($loader, []);
+  $twig = new \Twig\Environment($loader, ['cache' => 'compilation_cache']);
 
   // tokenizing path to extract and process route
   $path = ltrim($_SERVER['REQUEST_URI'], '/');

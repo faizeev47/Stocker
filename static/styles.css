@@ -10,14 +10,44 @@
   src: url('/static/fonts/IBM_Plex_Mono/IBMPlexMono.ttf');
 }
 
-
-
 *
 {
   font-family: 'Roboto Condensed';
 }
 
-/* TAGS */
+.cash-text
+{
+  color:#27ae60;
+  font-weight:bold;
+  font-family: 'IBM Plex Mono';
+}
+
+.centered
+{
+  text-align:center;
+}
+
+.detailed
+{
+  font-size:22px;
+}
+
+.extra-detailed
+{
+  font-size:50px;
+}
+
+.pointer
+{
+  cursor: pointer;
+}
+
+.trade-font
+{
+  font-family: 'IBM Plex Mono';
+}
+
+
 
 a, button
 {
@@ -42,9 +72,6 @@ main
   transition: background-color 0.5s;
 }
 
-
-/* CLASSES */
-
 .alert
 {
   text-align:center;
@@ -61,18 +88,6 @@ main
 .container-fluid > .card-columns
 {
   column-count:4;
-}
-
-.cash-text
-{
-  color:#27ae60;
-  font-weight:bold;
-  font-family: 'IBM Plex Mono';
-}
-
-.detailed
-{
-  font-size:22px;
 }
 
 main .form-control
@@ -92,15 +107,19 @@ main .form-control
   background-color: #27ae60 !important;
   color: #34495e;
 }
+
 .jumbotron > .display-1
 {
   font-size: 150px;
   font-family: 'IBM Plex Mono';
 }
+
 .jumbotron > .display-4, .jumbotron > .lead
 {
   font-weight: bold;
 }
+
+
 
 nav .nav-link
 {
@@ -123,17 +142,7 @@ nav .navbar-brand:active, nav .navbar-brand:hover
 }
 
 
-.pointer
-{
-  cursor: pointer;
-}
 
-.trade-font
-{
-  font-family: 'IBM Plex Mono';
-}
-
-/* IDs */
 
 #news-container
 {
@@ -150,29 +159,6 @@ nav .navbar-brand:active, nav .navbar-brand:hover
 {
   cursor: pointer;
   font-size: 25px;
-}
-
-
-/* SCROLL BAR */
-
-/* width */
-::-webkit-scrollbar {
-  width: 15px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #ecf0f1;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background-color: #95a5a6;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background-color: #bdc3c7;
 }
 
 
