@@ -1,57 +1,84 @@
 <?php
-// get access to user identity in the database
+// extract the data from database
 $do = new DatabaseObject($_SESSION['sess_id']);
-
-// extract user relevant information
 $user_data = $do->getUserData();
-$total_holdings = $user_data['cash'];
-
-$user_stocks = $do->getStocks();
-
-// array to be published on the webpage
-$stocks = array();
-// indicating whether API connection was complete
-$api_error = FALSE;
-foreach ($user_stocks['result'] as $row) {
-  // curl request to connect to the API
-  $url = sprintf($api_url, $row['symbol']);
+// user submitted buy request for $shares shares of a stock
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+  // get argumnents from the request
+  $symbol = $_POST['symbol'];
+  $shares = (int) $_POST['shares'];
+  // connect to the api
+  $url = sprintf($api_url, $symbol);
   $ch = curl_init();
-  curl_setopt($ch,CURLOPT_URL,$url);
-  curl_setopt($ch,CURLOPT_HTTPGET,TRUE);
-  curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-  curl_setopt($ch,CURLOPT_SSL_ENABLE_ALPN,FALSE);
-  curl_setopt($ch,CURLOPT_SSL_ENABLE_NPN,FALSE);
-  curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-  curl_setopt($ch,CURLOPT_SSL_VERIFYSTATUS,FALSE);
+  curl_setopt($ch, CURLOPT_URL,$url);
+  curl_setopt($ch, CURLOPT_HTTPGET,TRUE);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+  curl_setopt($ch, CURLOPT_SSL_ENABLE_ALPN,FALSE);
+  curl_setopt($ch, CURLOPT_SSL_ENABLE_NPN,FALSE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,FALSE);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYSTATUS,FALSE);
   $json = curl_exec($ch);
-  // response not recieved correctly thus API connection error occured
-  if(!$json && !$api_error){
-    $api_error = TRUE;
+  // if response is null, error connecting to API
+  if (!$json) {
     array_push($alerts, array("message" => "Could not connect to IEX to get live stock information! Try again later.", "type" => "danger"));
   }
-  curl_close($ch);
-
-  // convert response to JSON
-  $quote = json_decode($json);
-
-  // calculate total share holding and equity using live stock price
-  $share_holding = (float)$row['shares'] * (float)$quote->latestPrice;
-  $total_holdings += $share_holding;
-  array_push($stocks, array('symbol' => $row['symbol'],
-                            'name' => $quote->companyName,
-                            'shares' => $row['shares'],
-                            'change' => $quote->change,
-                            'changePercent' => $quote->changePercent,
-                            'latestPrice' =>  number_format((float)$quote->latestPrice, 2),
-                            'close' => $quote->close ? number_format((float)$quote->close, 2) : '-',
-                            'total' => number_format((float)$share_holding, 2)));
+  else {
+    $quote = json_decode($json);
+    // if response is empty, stock does not exist
+    if (!$quote) {
+      array_push($alerts, array("message" => "Stock does not exist!", "type" => "warning"));
+    }
+    else {
+      $buy_price = (float) $quote->latestPrice * (int) $shares;
+      // user does not have enough cash to buy stocks
+      if ($buy_price > $user_data['cash']) {
+        $alert = "Not enough cash! Buy price for ".$shares." shares of ".$quote->companyName." stock is $".number_format((float)$buy_price, 2).". You have $".number_format((float)$user_data['cash'], 2, '.', '');
+        array_push($alerts, array("message" => $alert, "type" => "warning"));
+      }
+      else
+      {
+        $user_stk_data = $do->getStockData($symbol);
+        // user made a appropriate buy request
+        // add new or update existing stock information into the stocks table
+        $do->buyStock($symbol, $shares);
+        // update user's balance after transaction
+        $do->updateCash(-$buy_price);
+        // add record in transaction history
+        $do->addTransaction($symbol, (float)$quote->latestPrice, $shares, DatabaseObject::IS_BUY);
+        if($shares == 1){
+          $alert = $shares." share of ".$quote->companyName." bought at $".number_format((float)$quote->latestPrice,2)."!";
+        }
+        else{
+          $alert = $shares." shares of ".$quote->companyName." bought at $".number_format((float)$quote->latestPrice,2)." per share for a total of $".$buy_price."!";
+        }
+        // alert user after success
+        array_push($alerts, array("message" => $alert, "type" => "success"));
+        $new_shares = $shares;
+        // calculate total shares owned for stock
+        if ($user_stk_data['numRows'] == 1) {
+          $new_shares += (int)$user_stk_data['result'][0]['shares'];
+        }
+        // alert user about share holding
+        if ($new_shares == 1){
+          $alert = " You now own 1 share of this stock.";
+        } else{
+          $alert = " You now own ".$new_shares." shares of this stock at a total value of $".number_format((float) $quote->latestPrice * $new_shares, 2);
+        }
+        array_push($alerts, array("message" => $alert, "type" => "info"));
+      }
+    }
+  }
 }
-echo $twig->render('home.twig',['title' => 'Dashboard',
-                                    'session' => 'start',
-                                    'username' => $user_data['username'],
-                                    'stocks' => $stocks, 'alerts' => $alerts, 'api_error' => $api_error, 'b' => $b, 't' => $t,
-                                    'cash' => number_format((float)$user_data['cash'], 2),
-                                    'total' => number_format((float)$total_holdings, 2) ]);
+$symbol = "";
+if(isset($_GET['symbol'])){
+  $symbol = $_GET['symbol'];
+}
+echo $twig->render('buy.twig',['title' => 'Buy',
+                            'session' => 'start',
+                            'username' => $user_data['username'],
+                            'cash' => $user_data['cash'],
+                            'symbol' => $symbol,
+                            'alerts' => $alerts]);
 $alerts = array();
 $routing = FALSE;
  ?>
