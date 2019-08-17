@@ -28,18 +28,19 @@ function formatNumber(number) {
 }
 
 function formatChange(change, type){
+  change = parseFloat(change);
   if (!change){
     return "N/A";
   }
   else {
     var s = document.createElement('span');
-    if (change > 0) {
+    if (change > 0.0) {
       $(s).css('color', "#27ae60");
-      s.innerHTML = "+" + formatNumber(change.toFixed(2));
+      s.innerHTML = "+" + formatNumber(change);
     }
-    else if (change < 0){
+    else if (change < 0.0){
       $(s).css('color', "red");
-      s.innerHTML =  formatNumber(change.toFixed(2));
+      s.innerHTML =  formatNumber(change);
     }
     else {
       s.innerHTML =  formatNumber(change);

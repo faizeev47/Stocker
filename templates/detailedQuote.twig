@@ -92,7 +92,7 @@
           <span class ="cash-text extra-detailed quote-attribute" id="latestPrice" type="cash"></span>
           <div id="changePercent-container">
             <span class ="cash-text detailed quote-attribute" change="yes" id="change" type="cash"></span>
-            (<span class ="cash-text detailed quote-attribute" change="yes" id="changePercent" type="percent"></span>)
+            (<span class ="cash-text detailed quote-attribute" change="yes" id="changePercent" type="percent" round="yes"></span>)
           </div>
           <hr>
           <div class="row">
@@ -199,13 +199,13 @@
         <div class="col">
           <div id="week52change-container">
             <b>52 Week Change</b><br>
-            <span class ="cash-text detailed advanced-stats-attribute" id="week52change"  type="percent"></span>
+            <span class ="cash-text detailed advanced-stats-attribute" id="week52change"  type="percent" round="yes"></span>
           </div>
         </div>
         <div class="col">
           <div id="ytdChange-container">
             <b>Year-to-Day Change</b><br>
-            <span class ="cash-text detailed quote-attribute" change="yes" id="ytdChange"  type="percent"></span>
+            <span class ="cash-text detailed quote-attribute" change="yes" id="ytdChange"  type="percent" round="yes"></span>
           </div>
         </div>
       </div>
@@ -274,7 +274,7 @@
         </div>
         <div class="col">
           <b>Total Revenue</b><br>
-          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" id="totalRevenue" ></span>
+          <span class ="detailed cash-text advanced-stats-attribute" prefix="yes" type="cash" id="totalRevenue" ></span>
         </div>
         <div class="col">
           <b>Revenues Per Share</b><br>
@@ -292,13 +292,13 @@
         <div class="col">
           <b>Profit Margin</b><br>
           <div id="profitMargin-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="profitMargin"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" round="yes" id="profitMargin"></span>
           </div>
         </div>
         <div class="col">
           <b>Debt To Equity</b><br>
           <div id="debtToEquity-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="debtToEquity"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" round="yes" id="debtToEquity"></span>
           </div>
         </div>
         <div class="col">
@@ -319,25 +319,25 @@
         <div class="col">
           <b>Price-sales ratio</b><br>
           <div id="priceToSales-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToSales"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToSales" round="yes"></span>
           </div>
         </div>
         <div class="col">
           <b>Price-Book ratio</b><br>
           <div id="priceToBook-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToBook"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="priceToBook" round="yes"></span>
           </div>
         </div>
         <div class="col">
           <b>Forward price-to-earnings</b><br>
           <div id="forwardPERatio-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="forwardPERatio"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="forwardPERatio" round="yes"></span>
           </div>
         </div>
         <div class="col">
           <b>PEG ratio</b><br>
           <div id="pegRatio-container">
-            <span class ="detailed advanced-stats-attribute" change="yes" id="pegRatio"></span>
+            <span class ="detailed advanced-stats-attribute" change="yes" id="pegRatio" round="yes"></span>
           </div>
         </div>
       </div>
@@ -471,15 +471,13 @@
           if(resp){
             // preprocess the response valuePrefix
             if($(element).attr('round')) {
-              resp = parseFloat(resp).toFixed(3);
+              resp = parseFloat(resp).toFixed(2);
             }
             if($(element).attr('prefix')) {
               resp = getPrefix(resp);
             }
 
-
-            // check type of value
-            let type =$(element).attr('type')
+            let type = $(element).attr('type');
             // value is of type change
             if ($(element).attr('change')){
               // set formatted change
@@ -492,9 +490,9 @@
                 $('#'+element.id+'-container').append($(caretDown).clone());
               }
             }
-            
-            else if (type == 'cash') {
-              $(element).html('$' + formatNumber(resp));
+
+            if (type == 'cash') {
+              $(element).html('$' + ($(element).attr('prefix')? resp : formatNumber(resp)));
             }
             else if(type == 'percent') {
               $(element).html(resp + '%');
