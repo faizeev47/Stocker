@@ -2,6 +2,7 @@
   require_once 'encryption.php';
   require 'vendor/autoload.php';
   include "databasehandler.php";
+  // hello noor
   // twig preloading
   $loader = new \Twig\Loader\FilesystemLoader('templates');
   $twig = new \Twig\Environment($loader, []);
